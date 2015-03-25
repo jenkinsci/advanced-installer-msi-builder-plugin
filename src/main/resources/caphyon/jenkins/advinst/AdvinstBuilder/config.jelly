@@ -1,0 +1,32 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+         xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <!--
+    This jelly script is used for per-project configuration.
+
+    See global.jelly for a general discussion about jelly script.
+  -->
+
+  <!--
+    Creates a text field that shows the value of the "aipFile" property.
+    When submitted, it will be passed to the corresponding constructor parameter.
+  -->
+  <f:entry title="${%AipProjectPath}" field="aipProjectPath">
+    <f:textbox />
+  </f:entry>
+  <f:entry title="${%AipProjectBuild}" field="aipProjectBuild">
+    <f:textbox />
+  </f:entry>
+  <f:section title="${%AipProjectAdvancedOptions}">
+    <f:advanced>
+      <f:entry title="${%AipProjectOutputFolder}" field="aipProjectOutputFolder">
+        <f:textbox />
+      </f:entry>
+        <f:entry title="${%AipProjectOutputName}" field="aipProjectOutputName">
+        <f:textbox />
+      </f:entry>
+      <f:entry field="aipProjectNoDigitalSignature">
+        <f:checkbox />${%AipProjectNoDigitalSignature}
+      </f:entry>
+    </f:advanced>
+  </f:section>
+</j:jelly>
