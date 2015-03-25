@@ -272,7 +272,7 @@ public class AdvinstBuilder extends Builder
       }
       catch (AdvinstException ex)
       {
-        listener.fatalError(mMessagesBundle.getString("ERR_ADVINST_AIP_BUILD_NOT_FOUND"));
+        listener.fatalError(ex.getMessage());
         build.setResult(Result.FAILURE);
         return false;
       }
