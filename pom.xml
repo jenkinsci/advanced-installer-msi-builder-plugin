@@ -45,4 +45,12 @@
     </developer>
   </developers>
 
+  <scm>
+    <connection>scm:git:ssh://github.com/jenkinsci/advanced-installer-msi-builder-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/advanced-installer-msi-builder-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/advanced-installer-msi-builder-plugin</url>
+  </scm>
+
+   <url>https://wiki.jenkins-ci.org/display/JENKINS/Advanced+Installer+Plugin</url>
+
 </project>
