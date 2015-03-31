@@ -110,10 +110,15 @@ public class AdvinstBuilder extends Builder
     {
       try
       {
-        File aipPath = new File(getAipProjectPath());
+        //Because the output folder may reference environment variables, expand them
+        //before computing the absolute path.
+        EnvVars envVars = build.getEnvironment(listener);
+        String expandedValue = envVars.expand(getAipProjectPath());
+
+        File aipPath = new File(expandedValue);
         if (aipPath.isAbsolute())
         {
-          absoluteAipPath = getAipProjectPath();
+          absoluteAipPath = expandedValue;
         }
         else //compute absolute path using build.getWorkspace() as root.
         {
