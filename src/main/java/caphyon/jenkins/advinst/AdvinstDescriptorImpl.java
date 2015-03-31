@@ -51,7 +51,20 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder>
     {
       return FormValidation.error(mMessagesBundle.getString("ERR_REQUIRED"));
     }
+    // Check if directory exists
+    Path advinstRoot = Paths.get(value);
+    if (Files.notExists(advinstRoot))
+    {
+      return FormValidation.error(mMessagesBundle.getString("ERR_PATH_NOT_FOUND"));
+    }
 
+    Path advinstPath = Paths.get(advinstRoot.toString(),
+            AdvinstConsts.AdvinstToolsSubfolder, AdvinstConsts.AdvinstComApp);
+
+    if (Files.notExists(advinstPath))
+    {
+      return FormValidation.error(mMessagesBundle.getString("ERR_INVALID_ADVINST_FOLDER"));
+    }
     return FormValidation.ok();
   }
 
