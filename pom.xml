@@ -9,7 +9,7 @@
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>advanced-installer-msi-builder</artifactId>
   <version>1.1-SNAPSHOT</version>
-  <name>Advanced Installer Plugin</name>
+  <name>Advanced Installer Msi Builder Plugin</name>
   <description>This plugin builds Advanced Installer projects.</description>
   <packaging>hpi</packaging>
   <licenses>
