@@ -5,6 +5,8 @@
  */
 package caphyon.jenkins.advinst;
 
+import java.io.File;
+
 /**
  * Constants used by Advinst plugin.
  *
@@ -17,7 +19,7 @@ public class AdvinstConsts
   public static final String AdvinstExeApp = "advinst.exe";
   public static final String AdvinstComApp = "AdvancedInstaller.com";
 
-  public static final String AdvinstToolsSubfolder = "bin\\x86\\";
+  public static final String AdvinstToolsSubfolder = "bin" + File.separator + "x86";
   public static final String AdvinstAicHeader = ";aic";
   public static final String AdvinstBuildAll = "All";
 

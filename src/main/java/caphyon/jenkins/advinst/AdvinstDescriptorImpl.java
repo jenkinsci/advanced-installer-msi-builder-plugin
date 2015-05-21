@@ -145,7 +145,7 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder>
    */
   public String getAdvinstRootPath()
   {
-    return this.mAdvinstRootPath;
+    return Paths.get(this.mAdvinstRootPath).toString();
   }
 
   public String getAdvinstComPath()
@@ -155,7 +155,7 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder>
       return "";
     }
 
-    return Paths.get(this.mAdvinstRootPath, AdvinstConsts.AdvinstToolsSubfolder,
+    return Paths.get(getAdvinstRootPath(), AdvinstConsts.AdvinstToolsSubfolder,
             AdvinstConsts.AdvinstComApp).toString();
   }
 }
