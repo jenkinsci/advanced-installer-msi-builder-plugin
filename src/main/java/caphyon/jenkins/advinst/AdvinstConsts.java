@@ -20,19 +20,22 @@ public class AdvinstConsts
   public static final String AdvinstComApp = "AdvancedInstaller.com";
 
   public static final String AdvinstToolsSubfolder = "bin" + File.separator + "x86";
+  public static final String AdvinstComSubPath = AdvinstToolsSubfolder + File.separator + AdvinstComApp;
   public static final String AdvinstAicHeader = ";aic";
   public static final String AdvinstBuildAll = "All";
 
   //--------------------------------------------------------------------------
-  //Acessors used by AdvinstData
-  public static final String AipBuild = "aipProjectBuild";
-  public static final String AipPath = "aipProjectPath";
-  public static final String OutputFolder = "aipProjectOutputFolder";
-  public static final String OutputName = "aipProjectOutputName";
-  public static final String NoDigSig = "aipProjectNoDigitalSignature";
-
-  //--------------------------------------------------------------------------
   //Advinst commands
   public static final String AdvinstCommandListBuilds = "ListBuilds";
-  public static final String AdvinstCommand = "ResetSig";
+  public static final String AdvinstCommandResetSig = "ResetSig";
+
+  //--------------------------------------------------------------------------
+  //Advinst parameters
+  public static final String AdvinstParamAdvinstRootPath = "advinstRootPath";
+  public static final String AdvinstParamAipBuild = "aipProjectBuild";
+  public static final String AdvinstParamAipPath = "aipProjectPath";
+  public static final String AdvinstParamAipOutputFolder = "aipProjectOutputFolder";
+  public static final String AdvinstParamAipOutputName = "aipProjectOutputName";
+  public static final String AdvinstParamAipNoDigSig = "aipProjectNoDigitalSignature";
+
 }

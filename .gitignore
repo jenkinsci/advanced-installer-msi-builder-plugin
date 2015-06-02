@@ -43,3 +43,6 @@ Temporary Items
 .apdisk
 /target/
 /work/
+/.idea/
+nb-configuration.xml
+*.iml
