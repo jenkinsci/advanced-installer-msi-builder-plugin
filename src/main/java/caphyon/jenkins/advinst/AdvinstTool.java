@@ -153,7 +153,8 @@ public class AdvinstTool
         throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_FOLDER_NOT_SET"), null);
       }
 
-      FilePath advinstRootPath = new FilePath(new File(advinstRootPathParam));
+      String expandedValue = mEnvVars.expand(advinstRootPathParam);
+      FilePath advinstRootPath = new FilePath(new File(expandedValue));
       FilePath advinstComPath = new FilePath(advinstRootPath, AdvinstConsts.AdvinstComSubPath);
       if (!advinstComPath.exists())
       {

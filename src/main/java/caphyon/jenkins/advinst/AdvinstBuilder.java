@@ -4,23 +4,25 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.FreeStyleProject.DescriptorImpl;
+import hudson.model.Result;
 import hudson.tasks.Builder;
-import java.io.IOException;
-import java.util.ResourceBundle;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
+import java.io.IOException;
+import java.util.ResourceBundle;
+
 /**
  * Sample {@link Builder}.
- *
- * <p>
+ * <p/>
+ * <p/>
  * When the user configures the project and enables this builder,
  * {@link DescriptorImpl#newInstance(StaplerRequest)} is invoked and a new
  * {@link AdvinstBuilder} is created. The created instance is persisted to the
  * project configuration XML by using XStream, so this allows you to use
  * instance fields (like {@link #name}) to remember the configuration.
- *
- * <p>
+ * <p/>
+ * <p/>
  * When a build is performed, the
  * {@link #perform(AbstractBuild, Launcher, BuildListener)} method will be
  * invoked.
@@ -37,17 +39,17 @@ public class AdvinstBuilder extends Builder
    * Class DataBoundConstructor. Fields in config.jelly must match the
    * parameter names in the "DataBoundConstructor"
    *
-   * @param aipProjectPath path to the Advanced Installer project to be built
-   * @param aipProjectBuild build name to be executed
-   * @param aipProjectOutputFolder output folder for the result package
-   * @param aipProjectOutputName name of the result package
+   * @param aipProjectPath               path to the Advanced Installer project to be buil
+   * @param aipProjectBuild              build name to be executed
+   * @param aipProjectOutputFolder       output folder for the result package
+   * @param aipProjectOutputName         name of the result package
    * @param aipProjectNoDigitalSignature tells to skip the digital signature
-   * step
+   *                                     step
    */
   @DataBoundConstructor
   public AdvinstBuilder(String aipProjectPath, String aipProjectBuild,
-          String aipProjectOutputFolder, String aipProjectOutputName,
-          boolean aipProjectNoDigitalSignature)
+                        String aipProjectOutputFolder, String aipProjectOutputName,
+                        boolean aipProjectNoDigitalSignature)
   {
     this.mAdvinstParameters = new AdvinstParameters();
     this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipPath, aipProjectPath);
@@ -56,6 +58,7 @@ public class AdvinstBuilder extends Builder
     this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipOutputName, aipProjectOutputName);
     this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipNoDigSig, aipProjectNoDigitalSignature);
   }
+
 
   /**
    * Performs the build.
@@ -73,26 +76,29 @@ public class AdvinstBuilder extends Builder
       this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAdvinstRootPath, getDescriptor().getAdvinstRootPath());
       AdvinstTool advinstTool = new AdvinstTool(build.getEnvironment(listener), mAdvinstParameters);
       StringBuilder advinstBuildLog = new StringBuilder();
-      advinstTool.Build(build.getWorkspace(), advinstBuildLog);
+      return advinstTool.Build(build.getWorkspace(), advinstBuildLog);
     }
     catch (IOException e)
     {
+      listener.fatalError(e.getMessage());
+      build.setResult(Result.FAILURE);
       return false;
     }
     catch (InterruptedException e)
     {
+      listener.fatalError(e.getMessage());
+      build.setResult(Result.FAILURE);
       return false;
     }
     catch (AdvinstException e)
     {
+      listener.fatalError(e.getMessage());
+      build.setResult(Result.FAILURE);
       return false;
     }
-
-    return true;
   }
 
   /**
-   *
    * @return
    */
   @Override
