@@ -8,7 +8,7 @@
 
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>advanced-installer-msi-builder</artifactId>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.2</version>
   <name>Advanced Installer Msi Builder Plugin</name>
   <description>This plugin builds Advanced Installer projects.</description>
   <packaging>hpi</packaging>
@@ -48,7 +48,7 @@
     <connection>scm:git:ssh://github.com/jenkinsci/advanced-installer-msi-builder-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/advanced-installer-msi-builder-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/advanced-installer-msi-builder-plugin</url>
-    <tag>HEAD</tag>
+    <tag>advanced-installer-msi-builder-1.2</tag>
   </scm>
 
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Advanced+Installer+Msi+Builder+Plugin</url>
