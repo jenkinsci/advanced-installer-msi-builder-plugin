@@ -12,7 +12,7 @@ import java.io.File;
  *
  * @author Ciprian
  */
-public class AdvinstConsts
+class AdvinstConsts
 {
 
   //--------------------------------------------------------------------------

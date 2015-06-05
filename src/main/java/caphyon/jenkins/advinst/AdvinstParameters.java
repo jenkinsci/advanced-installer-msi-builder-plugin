@@ -24,8 +24,8 @@
 
 package caphyon.jenkins.advinst;
 
-import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
+import java.util.Properties;
 
 public class AdvinstParameters
 {

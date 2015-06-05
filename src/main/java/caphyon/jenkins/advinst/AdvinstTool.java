@@ -25,151 +25,89 @@ package caphyon.jenkins.advinst;
 
 import hudson.EnvVars;
 import hudson.FilePath;
+import hudson.Launcher;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
+import hudson.util.ArgumentListBuilder;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class AdvinstTool
 {
-
   private static final ResourceBundle mMessagesBundle = ResourceBundle.getBundle("Messages");
-  private final EnvVars mEnvVars;
-  private final AdvinstParameters mParameters;
+  private final FilePath mAdvinstComPath;
 
-  public AdvinstTool(EnvVars envVars, AdvinstParameters advinstParams)
+
+  public AdvinstTool(final FilePath advinstComPath)
   {
-    this.mEnvVars = envVars;
-    this.mParameters = advinstParams;
+    this.mAdvinstComPath = advinstComPath;
   }
 
-  public boolean Build(final FilePath buildWorkspace, StringBuilder outputLog) throws AdvinstException
+  public boolean executeCommands(final List<String> commands,
+                                 final FilePath aipPath,
+                                 AbstractBuild build,
+                                 Launcher launcher,
+                                 BuildListener listener,
+                                 EnvVars env) throws AdvinstException
   {
-    boolean success = false;
+    FilePath aicFilePath = null;
+    try
+    {
+      if ( launcher.isUnix() )
+      {
+        throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_UNSUPPORTED_OS"));
+      }
+      FilePath pwd = build.getWorkspace();
+      aicFilePath = createAicFile(build.getWorkspace(), commands);
+      ArgumentListBuilder cmdExecArgs = new ArgumentListBuilder();
+      cmdExecArgs.add(mAdvinstComPath.getRemote(), "/execute",
+        aipPath.getRemote(), aicFilePath.getRemote());
 
-    FilePath absoluteAipPath = null;
-    FilePath absoluteOutputFolder = null;
-    String buildName = "";
-    String packageName = "";
+      int result = launcher.launch().cmds(cmdExecArgs).envs(env).stdout(listener).pwd(pwd).join();
+      return 0 == result;
 
-    //-------------------------------------------------------------------------
-    // Compute and validate AIP project path. It can be either an absolute path
-    // or relative to the build workspace folder
+    }
+    catch (IOException e)
+    {
+      throw new AdvinstException(e);
+    }
+    catch (InterruptedException e)
+    {
+      throw new AdvinstException(e);
+    }
+    finally
     {
       try
       {
-        //Because the output folder may reference environment variables, expand them
-        //before computing the absolute path.
-        String expandedValue = mEnvVars.expand(mParameters.get(AdvinstConsts.AdvinstParamAipPath, ""));
-
-        absoluteAipPath = new FilePath(buildWorkspace, expandedValue);
-        if (!absoluteAipPath.exists())
+        if (aicFilePath != null)
         {
-          throw new AdvinstException(String.format(mMessagesBundle.getString("ERR_ADVINST_AIP_NOT_FOUND"), absoluteAipPath));
+          aicFilePath.delete();
         }
       }
-      catch (IOException iOException)
+      catch (IOException e)
       {
-        throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_AIP_PATH_COMPUTE"));
+        throw new AdvinstException(e);
       }
-      catch (InterruptedException interruptedException)
+      catch (InterruptedException e)
       {
-        throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_AIP_PATH_COMPUTE"));
+        throw new AdvinstException(e);
       }
-    }
-
-    //------------------------------------------------------------------------
-    // Compute and validate output folder path. It can be either an absolute path
-    // or relative to the build workspace folder.
-    {
-      //Because the output folder may reference environment variables, expand them
-      //before computing the absolute path.
-      String expandedValue = mEnvVars.expand(mParameters.get(AdvinstConsts.AdvinstParamAipOutputFolder, ""));
-      if (!expandedValue.isEmpty())
-      {
-        absoluteOutputFolder = new FilePath(buildWorkspace, expandedValue);
-      }
-    }
-
-    //------------------------------------------------------------------------
-    // compute and validate build name.
-    {
-
-      buildName = mEnvVars.expand(mParameters.get(AdvinstConsts.AdvinstParamAipBuild, ""));
-
-      //Check if this build actually exists in the AIP
-      AdvinstAipReader aipReader = new AdvinstAipReader(absoluteAipPath);
-      if (!buildName.isEmpty() && !aipReader.getBuilds().contains(buildName))
-      {
-        throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_AIP_BUILD_NOT_FOUND"));
-      }
-    }
-
-    //------------------------------------------------------------------------
-    //compute and validate the output package name
-    {
-      packageName = mEnvVars.expand(mParameters.get(AdvinstConsts.AdvinstParamAipOutputName, ""));
-    }
-
-    //------------------------------------------------------------------------
-    //make the necesary configurations and run the build
-    {
-
-      List<String> advinstCommands = new ArrayList<String>();
-
-      if (!packageName.isEmpty())
-      {
-        advinstCommands.add(String.format("SetPackageName \"%s\" -buildname \"%s\"", packageName, buildName));
-      }
-
-      if (null != absoluteOutputFolder)
-      {
-        advinstCommands.add(String.format("SetOutputLocation -buildname \"%s\" -path \"%s\"", buildName, absoluteOutputFolder));
-      }
-
-      if (mParameters.get(AdvinstConsts.AdvinstParamAipNoDigSig, false))
-      {
-        advinstCommands.add("ResetSig");
-      }
-
-      advinstCommands.add(String.format("Build -buildslist \"%s\"", buildName));
-
-
-      success = AdvinstCommands.executeCommandsBatch(getAdvinstComPath(),
-        absoluteAipPath, buildWorkspace, advinstCommands, outputLog);
-      return success;
     }
   }
 
-  private FilePath getAdvinstComPath() throws AdvinstException
+  private static FilePath createAicFile(final FilePath buildWorkspace, final List<String> aCommands) throws IOException, InterruptedException
   {
-    try
+    FilePath aicFile = buildWorkspace.createTempFile("aic", "aic");
+    String fileContent = AdvinstConsts.AdvinstAicHeader + "\r\n";
+    for (String command : aCommands)
     {
-      final String advinstRootPathParam = mParameters.get(AdvinstConsts.AdvinstParamAdvinstRootPath, "");
-      if (advinstRootPathParam.isEmpty())
-      {
-        throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_FOLDER_NOT_SET"), null);
-      }
+      fileContent += command;
+      fileContent += "\r\n";
+    }
 
-      String expandedValue = mEnvVars.expand(advinstRootPathParam);
-      FilePath advinstRootPath = new FilePath(new File(expandedValue));
-      FilePath advinstComPath = new FilePath(advinstRootPath, AdvinstConsts.AdvinstComSubPath);
-      if (!advinstComPath.exists())
-      {
-        throw new AdvinstException(String.format(mMessagesBundle.getString("ERR_ADVINST_COM_NOT_FOUND"), advinstComPath.toURI()), null);
-      }
-
-      return advinstComPath;
-    }
-    catch (IOException ex)
-    {
-      throw new AdvinstException(ex.getMessage(), ex);
-    }
-    catch (InterruptedException ex)
-    {
-      throw new AdvinstException(ex.getMessage(), ex);
-    }
+    aicFile.write(fileContent, "UTF-16");
+    return aicFile;
   }
 }

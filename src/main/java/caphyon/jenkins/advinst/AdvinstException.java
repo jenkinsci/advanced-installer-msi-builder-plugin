@@ -22,4 +22,9 @@ public class AdvinstException extends Exception
   {
     super(message);
   }
+
+  public AdvinstException(Throwable t)
+  {
+    super(t);
+  }
 }

@@ -1,6 +1,9 @@
 package caphyon.jenkins.advinst;
 
+import hudson.EnvVars;
+import hudson.FilePath;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.FreeStyleProject.DescriptorImpl;
@@ -10,6 +13,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -71,12 +75,22 @@ public class AdvinstBuilder extends Builder
   @Override
   public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener)
   {
+    boolean success;
     try
     {
-      this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAdvinstRootPath, getDescriptor().getAdvinstRootPath());
-      AdvinstTool advinstTool = new AdvinstTool(build.getEnvironment(listener), mAdvinstParameters);
-      StringBuilder advinstBuildLog = new StringBuilder();
-      return advinstTool.Build(build.getWorkspace(), advinstBuildLog);
+      EnvVars env = build.getEnvironment(listener);
+      final FilePath advinstComPath = getAdvinstComPath(build, launcher, env);
+      final FilePath advinstAipPath = getAdvinstAipPath(build, launcher, env);
+
+
+      AdvinstParametersProcessor paramsProcessor =
+        new AdvinstParametersProcessor(mAdvinstParameters, advinstAipPath, build, env);
+      final List<String> commands = paramsProcessor.getCommands();
+
+      AdvinstTool advinstTool = new AdvinstTool(advinstComPath);
+      success = advinstTool.executeCommands(commands, advinstAipPath,
+        build, launcher, listener, env);
+      build.setResult(success ? Result.SUCCESS : Result.FAILURE);
     }
     catch (IOException e)
     {
@@ -96,6 +110,7 @@ public class AdvinstBuilder extends Builder
       build.setResult(Result.FAILURE);
       return false;
     }
+    return success;
   }
 
   /**
@@ -147,5 +162,62 @@ public class AdvinstBuilder extends Builder
   public boolean getAipProjectNoDigitalSignature()
   {
     return this.mAdvinstParameters.get(AdvinstConsts.AdvinstParamAipNoDigSig, false);
+  }
+
+  private FilePath getAdvinstComPath(final AbstractBuild<?, ?> build, final Launcher launcher, final EnvVars env) throws AdvinstException
+  {
+    final String advinstRootPathParam = getDescriptor().getAdvinstRootPath();
+    if (advinstRootPathParam.isEmpty())
+    {
+      throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_FOLDER_NOT_SET"));
+    }
+    String expandedValue  = Util.replaceMacro(advinstRootPathParam, env);
+    expandedValue = Util.replaceMacro(expandedValue, build.getBuildVariables());
+    assert expandedValue != null;
+    FilePath advinstRootPath = new FilePath(launcher.getChannel(), expandedValue);
+    FilePath advinstComPath = new FilePath(advinstRootPath, AdvinstConsts.AdvinstComSubPath);
+    try
+    {
+      if (!advinstComPath.exists())
+      {
+        throw new AdvinstException(String.format(mMessagesBundle.getString("ERR_ADVINST_COM_NOT_FOUND"), advinstComPath), null);
+      }
+    }
+    catch (IOException e)
+    {
+      throw new AdvinstException(e);
+    }
+    catch (InterruptedException e)
+    {
+      throw new AdvinstException(e);
+    }
+
+    return advinstComPath;
+  }
+
+  private FilePath getAdvinstAipPath(final AbstractBuild<?, ?> build, final Launcher launcher, final EnvVars env) throws AdvinstException
+  {
+    final String advinstAipPathParam = getAipProjectPath();
+    String expandedValue  = Util.replaceMacro(advinstAipPathParam, env);
+    expandedValue = Util.replaceMacro(expandedValue, build.getBuildVariables());
+    assert expandedValue != null;
+    FilePath advinstAipPath = new FilePath(build.getWorkspace(), expandedValue);
+    try
+    {
+      if (!advinstAipPath.exists())
+      {
+        throw new AdvinstException(String.format(mMessagesBundle.getString("ERR_ADVINST_AIP_NOT_FOUND"), advinstAipPath));
+      }
+    }
+    catch (IOException e)
+    {
+      throw new AdvinstException(e);
+    }
+    catch (InterruptedException e)
+    {
+      throw new AdvinstException(e);
+    }
+
+    return advinstAipPath;
   }
 }

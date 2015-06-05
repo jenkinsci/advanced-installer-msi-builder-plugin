@@ -20,7 +20,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +28,7 @@ import java.util.List;
  *
  * @author Ciprian Burca
  */
-public class AdvinstAipReader
+class AdvinstAipReader
 {
 
   private final FilePath mAipFile;
@@ -96,12 +95,8 @@ public class AdvinstAipReader
     }
 
     Attr nameAttr = (Attr) children.item(1).getAttributes().getNamedItem("Type");
-    if (null == nameAttr)
-    {
-      return false;
-    }
+    return null != nameAttr;
 
-    return true;
   }
 
   private void loadXmlFile() throws AdvinstException
@@ -115,7 +110,7 @@ public class AdvinstAipReader
 
       DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-      mXmlDocument = documentBuilder.parse(new File(mAipFile.toURI()));
+      mXmlDocument = documentBuilder.parse(mAipFile.read());
     }
     catch (SAXException ex)
     {
