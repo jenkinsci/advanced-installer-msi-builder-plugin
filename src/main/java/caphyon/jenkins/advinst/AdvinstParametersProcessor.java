@@ -8,6 +8,7 @@ import hudson.model.AbstractBuild;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 
 /**
  * Translates the parameters provided by the user into something that Advanced Installer can work with.
@@ -90,6 +91,16 @@ public class AdvinstParametersProcessor
     if (mUiParameters.get(AdvinstConsts.AdvinstParamAipNoDigSig, false))
     {
       advinstCommands.add("ResetSig");
+    }
+
+    String additionalCommands = getExpandedStringValue(AdvinstConsts.AdvinstParamExtraCommands);
+    if (!additionalCommands.isEmpty())
+    {
+      StringTokenizer tokenizer = new StringTokenizer(additionalCommands, "\r\n");
+      while (tokenizer.hasMoreTokens())
+      {
+        advinstCommands.add(tokenizer.nextToken());
+      }
     }
 
     advinstCommands.add(String.format("Build -buildslist \"%s\"", buildName));

@@ -37,5 +37,6 @@ class AdvinstConsts
   public static final String AdvinstParamAipOutputFolder = "aipProjectOutputFolder";
   public static final String AdvinstParamAipOutputName = "aipProjectOutputName";
   public static final String AdvinstParamAipNoDigSig = "aipProjectNoDigitalSignature";
+  public static final String AdvinstParamExtraCommands = "advinstExtraCommands";
 
 }

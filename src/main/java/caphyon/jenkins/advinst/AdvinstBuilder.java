@@ -53,7 +53,7 @@ public class AdvinstBuilder extends Builder
   @DataBoundConstructor
   public AdvinstBuilder(String aipProjectPath, String aipProjectBuild,
                         String aipProjectOutputFolder, String aipProjectOutputName,
-                        boolean aipProjectNoDigitalSignature)
+                        String advinstExtraCommands, boolean aipProjectNoDigitalSignature)
   {
     this.mAdvinstParameters = new AdvinstParameters();
     this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipPath, aipProjectPath);
@@ -61,6 +61,7 @@ public class AdvinstBuilder extends Builder
     this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipOutputFolder, aipProjectOutputFolder);
     this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipOutputName, aipProjectOutputName);
     this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipNoDigSig, aipProjectNoDigitalSignature);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamExtraCommands, advinstExtraCommands);
   }
 
 
@@ -153,6 +154,14 @@ public class AdvinstBuilder extends Builder
   public String getAipProjectOutputName()
   {
     return this.mAdvinstParameters.get(AdvinstConsts.AdvinstParamAipOutputName, "");
+  }
+
+  /**
+   * @return String containing additional edit commands
+   */
+  public String getAdvinstExtraCommands()
+  {
+    return this.mAdvinstParameters.get(AdvinstConsts.AdvinstParamExtraCommands, "");
   }
 
   /**

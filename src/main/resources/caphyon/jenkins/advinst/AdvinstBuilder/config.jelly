@@ -21,8 +21,11 @@
       <f:entry title="${%AipProjectOutputFolder}" field="aipProjectOutputFolder">
         <f:textbox />
       </f:entry>
-        <f:entry title="${%AipProjectOutputName}" field="aipProjectOutputName">
+      <f:entry title="${%AipProjectOutputName}" field="aipProjectOutputName">
         <f:textbox />
+      </f:entry>
+      <f:entry title="${%AdvinstExtraCommands}" field="advinstExtraCommands">
+        <f:textarea/>
       </f:entry>
       <f:entry field="aipProjectNoDigitalSignature">
         <f:checkbox />${%AipProjectNoDigitalSignature}
