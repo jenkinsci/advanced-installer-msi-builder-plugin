@@ -20,8 +20,10 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import org.xml.sax.InputSource;
 
 /**
  * Utility class that extract information by reading the AIP file directly.
@@ -110,7 +112,12 @@ class AdvinstAipReader
 
       DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-      mXmlDocument = documentBuilder.parse(mAipFile.read());
+      String aipContent = mAipFile.readToString();
+      // Update the XML version from 1.0 to 1.1. The AIP might contain special characters like &#1; 
+      // which are invalid for XML 1.0.
+      aipContent = aipContent.replace("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>", 
+              "<?xml version=\"1.1\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+      mXmlDocument = documentBuilder.parse(new InputSource(new StringReader(aipContent)));
     }
     catch (SAXException ex)
     {
