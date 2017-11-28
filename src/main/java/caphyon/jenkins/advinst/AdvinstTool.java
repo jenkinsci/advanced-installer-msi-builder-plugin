@@ -59,8 +59,15 @@ public class AdvinstTool
       {
         throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_UNSUPPORTED_OS"));
       }
+
       FilePath pwd = build.getWorkspace();
-      aicFilePath = createAicFile(build.getWorkspace(), commands);
+      if (null == pwd)
+        return false;
+
+      aicFilePath = createAicFile(pwd, commands);
+      if (null == aicFilePath)
+        throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_FAILED_AIC"));
+
       ArgumentListBuilder cmdExecArgs = new ArgumentListBuilder();
       cmdExecArgs.add(mAdvinstComPath.getRemote(), "/execute",
         aipPath.getRemote(), aicFilePath.getRemote());
@@ -100,14 +107,14 @@ public class AdvinstTool
   private static FilePath createAicFile(final FilePath buildWorkspace, final List<String> aCommands) throws IOException, InterruptedException
   {
     FilePath aicFile = buildWorkspace.createTempFile("aic", "aic");
-    String fileContent = AdvinstConsts.AdvinstAicHeader + "\r\n";
+    StringBuffer fileContent =  new StringBuffer(AdvinstConsts.AdvinstAicHeader + "\r\n");
     for (String command : aCommands)
     {
-      fileContent += command;
-      fileContent += "\r\n";
+      fileContent.append(command);
+      fileContent.append("\r\n");
     }
 
-    aicFile.write(fileContent, "UTF-16");
+    aicFile.write(fileContent.toString(), "UTF-16");
     return aicFile;
   }
 }
