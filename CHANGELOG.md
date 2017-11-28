@@ -2,6 +2,11 @@ ChangeLog
 =========
 Changelog of Advanced Installer plugin for Jenkins.
 
+Advanced Installer Msi Builder Plugin  1.3.1
+-----------------------
+Bugs:
+* AIP fails validation when it contains specials characters like &#x;
+
 Advanced Installer Msi Builder Plugin  1.3
 -----------------------
 Added support for additional edit commands.
