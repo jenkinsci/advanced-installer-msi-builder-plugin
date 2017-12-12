@@ -96,19 +96,10 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
    * @return Human readable name is used in the configuration screen.
    */
   @Override
-  {
-    return mMessagesBundle.getString("ADVINST");
+  public String getDisplayName() {
+    return mMessagesBundle.getString("ADVINST_INVOKE");
   }
 
-  @Override
-  public boolean configure(StaplerRequest req, JSONObject formData) throws Descriptor.FormException
-  {
-    try
-    {
-      this.mAdvinstRootPath = formData.getString("advinstRootPath");
-    }
-    catch (Exception e)
-    {
   public boolean configure(StaplerRequest req, JSONObject formData) throws Descriptor.FormException {
     save();
     return super.configure(req, formData);
