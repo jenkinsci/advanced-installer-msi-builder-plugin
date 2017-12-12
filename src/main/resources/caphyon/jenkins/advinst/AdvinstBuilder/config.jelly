@@ -1,16 +1,24 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core"
-         xmlns:f="/lib/form">
-  <!--
-    This jelly script is used for per-project configuration.
-
-    See global.jelly for a general discussion about jelly script.
-  -->
-
-  <!--
-    Creates a text field that shows the value of the "aipFile" property.
-    When submitted, it will be passed to the corresponding constructor parameter.
-  -->
+<j:jelly 
+  xmlns:j="jelly:core" 
+  xmlns:st="jelly:stapler" 
+  xmlns:d="jelly:define" 
+  xmlns:l="/lib/layout" 
+  xmlns:t="/lib/hudson" 
+  xmlns:f="/lib/form">
+  <!-- Advinst Installations -->
+  <j:set var="advinstInstalls" value="${descriptor.getInstallations()}"/>
+  <j:if test="${empty(advinstInstalls)}">
+    <!-- no Advinst installation is configured, so warn the user now -->
+    <f:entry title="${%AdvinstInstallationName}">
+      <div class="error">${%AdvinstInstallation.error(rootURL)}</div>
+    </f:entry>
+  </j:if>
+  <j:if test="${advinstInstalls.size() gt 0}">
+    <f:entry title="${%AdvinstInstallationName}" field="installName">
+      <f:select/>
+    </f:entry>
+  </j:if>
   <f:entry title="${%AipProjectPath}" field="aipProjectPath">
     <f:textbox />
   </f:entry>

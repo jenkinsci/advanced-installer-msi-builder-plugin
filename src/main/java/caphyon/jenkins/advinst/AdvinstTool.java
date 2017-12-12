@@ -37,10 +37,10 @@ import java.util.ResourceBundle;
 public class AdvinstTool
 {
   private static final ResourceBundle mMessagesBundle = ResourceBundle.getBundle("Messages");
-  private final FilePath mAdvinstComPath;
+  private final String mAdvinstComPath;
 
 
-  public AdvinstTool(final FilePath advinstComPath)
+  public AdvinstTool(final String advinstComPath)
   {
     this.mAdvinstComPath = advinstComPath;
   }
@@ -69,7 +69,7 @@ public class AdvinstTool
         throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_FAILED_AIC"));
 
       ArgumentListBuilder cmdExecArgs = new ArgumentListBuilder();
-      cmdExecArgs.add(mAdvinstComPath.getRemote(), "/execute",
+      cmdExecArgs.add(mAdvinstComPath, "/execute",
         aipPath.getRemote(), aicFilePath.getRemote());
 
       int result = launcher.launch().cmds(cmdExecArgs).envs(env).stdout(listener).pwd(pwd).join();

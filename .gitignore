@@ -1,7 +1,11 @@
 /target/
 /work/
 /.idea/
+/.settings/
+/.vscode/
 nb-configuration.xml
 *.iml
 *.releaseBackup
 *.properties
+*.project
+*.classpath
