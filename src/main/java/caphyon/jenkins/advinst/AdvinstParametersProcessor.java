@@ -7,7 +7,6 @@ import hudson.model.AbstractBuild;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 /**
@@ -18,7 +17,6 @@ import java.util.StringTokenizer;
  */
 public class AdvinstParametersProcessor
 {
-  private static final ResourceBundle mMessagesBundle = ResourceBundle.getBundle("Messages");
   private final EnvVars mEnvVars;
   private final AdvinstParameters mUiParameters;
   private final FilePath mBuildWorkspace;
@@ -62,7 +60,7 @@ public class AdvinstParametersProcessor
       AdvinstAipReader aipReader = new AdvinstAipReader(mAipPath);
       if (!buildName.isEmpty() && !aipReader.getBuilds().contains(buildName))
       {
-        throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_AIP_BUILD_NOT_FOUND"));
+        throw new AdvinstException(Messages.ERR_ADVINST_AIP_BUILD_NOT_FOUND());
       }
     }
 

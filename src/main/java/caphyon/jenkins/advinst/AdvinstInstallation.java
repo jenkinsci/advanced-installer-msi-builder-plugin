@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
@@ -29,7 +28,7 @@ public final class AdvinstInstallation extends ToolInstallation
     implements EnvironmentSpecific<AdvinstInstallation>, NodeSpecific<AdvinstInstallation>, Serializable {
 
   private final String advinstHome;
-  private static final String advinstSubPath = "bin\\x86\\AdvancedInstaller.com";
+  public static final String advinstComSubPath = "bin\\x86\\AdvancedInstaller.com";
 
   @DataBoundConstructor
   public AdvinstInstallation(String name, String home, List<? extends ToolProperty<?>> properties) {
@@ -43,12 +42,6 @@ public final class AdvinstInstallation extends ToolInstallation
       return advinstHome;
     }
     return super.getHome();
-  }
-
-  @Override
-  public String getName()
-  {
-    return super.getName();
   }
 
   public String getExecutable(Launcher launcher) throws IOException, InterruptedException {
@@ -65,7 +58,7 @@ public final class AdvinstInstallation extends ToolInstallation
 
   private File getExeFile() {
     String home = Util.replaceMacro(advinstHome, EnvVars.masterEnvVars);
-    return new File(home, advinstSubPath);
+    return new File(home, advinstComSubPath);
   }
 
   @Override
@@ -81,19 +74,18 @@ public final class AdvinstInstallation extends ToolInstallation
   @Extension
   public static class DescriptorImpl extends ToolDescriptor<AdvinstInstallation> {
 
-    private static final ResourceBundle mMessagesBundle = ResourceBundle.getBundle("Messages");
-
+    
     @Inject
     private AdvinstDescriptorImpl mAdvinstDescriptor;
 
     @Override
     public String getDisplayName() {
-      return mMessagesBundle.getString("ADVINST");
+      return Messages.ADVINST();
     }
 
     @Override
     public List<? extends ToolInstaller> getDefaultInstallers() {
-      return Collections.singletonList(new AdvinstInstaller(null));
+      return Collections.singletonList(new AdvinstInstaller(null, null, null));
     }
 
     @Override

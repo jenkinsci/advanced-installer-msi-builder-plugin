@@ -3,13 +3,13 @@ package caphyon.jenkins.advinst;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
-import net.sf.json.JSONObject;
+
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+
 import hudson.CopyOnWrite;
 import hudson.Extension;
 import hudson.model.AbstractProject;
@@ -19,6 +19,7 @@ import hudson.tasks.Builder;
 import hudson.tools.ToolInstallation;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import net.sf.json.JSONObject;
 
 /**
  * Descriptor for {@link AdvinstBuilder}. Used as a singleton. The class is
@@ -34,7 +35,6 @@ import hudson.util.ListBoxModel;
 @Extension // This indicates to Jenkins that this is an implementation of an extension point.
 public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
 
-  private static final ResourceBundle mMessagesBundle = ResourceBundle.getBundle("Messages");
   //This logger writes to the Jenkins system log.
   private static final Logger LOGGER = Logger.getLogger("jenkins.advinstbuilder");
   @CopyOnWrite
@@ -56,7 +56,7 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
 
   public FormValidation doCheckAipProjectPath(@QueryParameter String value) throws IOException, ServletException {
     if (value == null || value.length() == 0) {
-      return FormValidation.error(mMessagesBundle.getString("ERR_REQUIRED"));
+      return FormValidation.error(Messages.ERR_REQUIRED());
     }
 
     return FormValidation.ok();
@@ -66,7 +66,7 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
       @QueryParameter String aipProjectBuild) throws IOException, ServletException {
     if (value != null && !value.isEmpty()) {
       if (aipProjectBuild == null || aipProjectBuild.length() == 0) {
-        return FormValidation.error(mMessagesBundle.getString("ERR_BUILD_NAME_REQUIRED"));
+        return FormValidation.error(Messages.ERR_BUILD_NAME_REQUIRED());
       }
     }
     return FormValidation.ok();
@@ -76,16 +76,12 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
       @QueryParameter String aipProjectBuild) throws IOException, ServletException {
     if (value != null && !value.isEmpty()) {
       if (aipProjectBuild == null || aipProjectBuild.length() == 0) {
-        return FormValidation.error(mMessagesBundle.getString("ERR_BUILD_NAME_REQUIRED"));
+        return FormValidation.error(Messages.ERR_BUILD_NAME_REQUIRED());
       }
     }
     return FormValidation.ok();
   }
 
-  /**
-   * @param aClass
-   * @return
-   */
   @Override
   public boolean isApplicable(Class<? extends AbstractProject> aClass) {
     // Indicates that this builder can be used with all kinds of project types
@@ -97,7 +93,7 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
    */
   @Override
   public String getDisplayName() {
-    return mMessagesBundle.getString("ADVINST_INVOKE");
+    return Messages.ADVINST_INVOKE();
   }
 
   public boolean configure(StaplerRequest req, JSONObject formData) throws Descriptor.FormException {

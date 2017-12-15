@@ -2,7 +2,6 @@ package caphyon.jenkins.advinst;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -32,14 +31,13 @@ import hudson.tasks.Builder;
  * <p/>
  * <p/>
  * When a build is performed, the
- * {@link #perform(AbstractBuild, Launcher, BuildListener)} method will be
+ * {@link AdvinstBuilder#perform(AbstractBuild, Launcher, BuildListener)} method will be
  * invoked.
  *
  * @author Ciprian Burca
  */
 public class AdvinstBuilder extends Builder {
 
-  private static final ResourceBundle mMessagesBundle = ResourceBundle.getBundle("Messages");
   private final AdvinstParameters mAdvinstParameters;
   private String mInstallName;
 
@@ -47,7 +45,7 @@ public class AdvinstBuilder extends Builder {
    * Class DataBoundConstructor. Fields in config.jelly must match the
    * parameter names in the "DataBoundConstructor"
    *
-   * @param advinstInstallationName      name of the selected advinst installation name
+   * @param installName                  name of the selected advinst installation name
    * @param aipProjectPath               path to the Advanced Installer project to be buil
    * @param aipProjectBuild              build name to be executed
    * @param aipProjectOutputFolder       output folder for the result package
@@ -75,7 +73,7 @@ public class AdvinstBuilder extends Builder {
    * @param build
    * @param launcher
    * @param listener
-   * @return
+   * @return success
    */
   @Override
   public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
@@ -108,9 +106,6 @@ public class AdvinstBuilder extends Builder {
     return success;
   }
 
-  /**
-   * @return
-   */
   @Override
   public final AdvinstDescriptorImpl getDescriptor() {
     return (AdvinstDescriptorImpl) super.getDescriptor();
@@ -175,13 +170,13 @@ public class AdvinstBuilder extends Builder {
 
     AdvinstInstallation advinstInstall = getAdvinstInstallation();
     if (null == advinstInstall) {
-      throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_INSTALL_NOT_SET"));
+      throw new AdvinstException(Messages.ERR_ADVINST_INSTALL_NOT_SET());
     }
 
     Computer computer = Computer.currentComputer();
     Node node = computer != null ? computer.getNode() : null;
     if (node == null) {
-      throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_COM_NOT_FOUND"));
+      throw new AdvinstException(Messages.ERR_ADVINST_COM_NOT_FOUND());
     }
 
     String advinstComPath = null;
@@ -190,7 +185,7 @@ public class AdvinstBuilder extends Builder {
       advinstInstall = advinstInstall.forEnvironment(env);
       advinstComPath = advinstInstall.getExecutable(launcher);
       if (null == advinstComPath) {
-        throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_COM_NOT_FOUND"));
+        throw new AdvinstException(Messages.ERR_ADVINST_COM_NOT_FOUND());
       }
     } catch (IOException ex) {
       throw new AdvinstException(ex);
@@ -211,7 +206,7 @@ public class AdvinstBuilder extends Builder {
     try {
       if (!advinstAipPath.exists()) {
         throw new AdvinstException(
-            String.format(mMessagesBundle.getString("ERR_ADVINST_AIP_NOT_FOUND"), advinstAipPath));
+            Messages.ERR_ADVINST_AIP_NOT_FOUND(advinstAipPath.getRemote()));
       }
     } catch (IOException e) {
       throw new AdvinstException(e);

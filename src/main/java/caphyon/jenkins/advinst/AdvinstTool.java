@@ -23,6 +23,9 @@
  */
 package caphyon.jenkins.advinst;
 
+import java.io.IOException;
+import java.util.List;
+
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -30,15 +33,9 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.util.ArgumentListBuilder;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.ResourceBundle;
-
 public class AdvinstTool
 {
-  private static final ResourceBundle mMessagesBundle = ResourceBundle.getBundle("Messages");
   private final String mAdvinstComPath;
-
 
   public AdvinstTool(final String advinstComPath)
   {
@@ -57,7 +54,7 @@ public class AdvinstTool
     {
       if ( launcher.isUnix() )
       {
-        throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_UNSUPPORTED_OS"));
+        throw new AdvinstException(Messages.ERR_ADVINST_UNSUPPORTED_OS());
       }
 
       FilePath pwd = build.getWorkspace();
@@ -66,7 +63,7 @@ public class AdvinstTool
 
       aicFilePath = createAicFile(pwd, commands);
       if (null == aicFilePath)
-        throw new AdvinstException(mMessagesBundle.getString("ERR_ADVINST_FAILED_AIC"));
+        throw new AdvinstException(Messages.ERR_ADVINST_FAILED_AIC());
 
       ArgumentListBuilder cmdExecArgs = new ArgumentListBuilder();
       cmdExecArgs.add(mAdvinstComPath, "/execute",
