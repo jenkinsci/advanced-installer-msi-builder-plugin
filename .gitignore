@@ -6,6 +6,5 @@
 nb-configuration.xml
 *.iml
 *.releaseBackup
-*.properties
 *.project
 *.classpath
