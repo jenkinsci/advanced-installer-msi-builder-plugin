@@ -5,6 +5,10 @@
     <artifactId>plugin</artifactId>
     <version>2.5</version>
   </parent>
+ 
+  <properties>
+      <jenkins.version>2.5</jenkins.version>
+  </properties>
 
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>advanced-installer-msi-builder</artifactId>
