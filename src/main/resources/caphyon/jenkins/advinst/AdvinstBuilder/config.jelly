@@ -11,7 +11,7 @@
   <j:if test="${empty(advinstInstalls)}">
     <!-- no Advinst installation is configured, so warn the user now -->
     <f:entry title="${%AdvinstInstallationName}">
-      <div class="error">${%AdvinstInstallation.error(rootURL)}</div>
+      <div class="error">${%AdvinstInstallation.Error(rootURL)}</div>
     </f:entry>
   </j:if>
   <j:if test="${advinstInstalls.size() gt 0}">
