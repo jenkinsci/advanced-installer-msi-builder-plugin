@@ -10,7 +10,7 @@ import javax.servlet.ServletException;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -52,6 +52,7 @@ public final class AdvinstInstaller extends ToolInstaller {
   }
 
   @Override
+  @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
   public FilePath performInstallation(ToolInstallation tool, Node node, TaskListener listener)
       throws IOException, InterruptedException {
 
@@ -108,11 +109,9 @@ public final class AdvinstInstaller extends ToolInstaller {
 
   private boolean isUpToDate(final FilePath expectedRoot, Node node) throws IOException, InterruptedException {
 
-    FilePath advinstExePath = expectedRoot;
-    advinstExePath.child(AdvinstInstallation.advinstComSubPath);
-
+    FilePath advinstComPath = expectedRoot.child(AdvinstInstallation.advinstComSubPath);
     //Check if the advinst executable exists.
-    if (!advinstExePath.exists())
+    if (!advinstComPath.exists())
       return false;
 
     return true;
