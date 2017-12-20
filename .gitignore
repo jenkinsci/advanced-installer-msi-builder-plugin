@@ -8,3 +8,4 @@ nb-configuration.xml
 *.releaseBackup
 *.project
 *.classpath
+release.properties

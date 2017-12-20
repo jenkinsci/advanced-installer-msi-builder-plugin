@@ -2,6 +2,11 @@ ChangeLog
 =========
 Changelog of Advanced Installer plugin for Jenkins.
 
+Advanced Installer Msi Builder Plugin  2.0
+-----------------------
+Features:
+* Advanced Installer is automatically deployed on the slave nodes.
+
 Advanced Installer Msi Builder Plugin  1.3.1
 -----------------------
 Bugs:
