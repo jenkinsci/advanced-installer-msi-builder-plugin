@@ -8,6 +8,7 @@
  
   <properties>
       <jenkins.version>2.5</jenkins.version>
+      <jna.version>4.5.1</jna.version>
   </properties>
 
   <groupId>org.jenkins-ci.plugins</groupId>
@@ -33,6 +34,13 @@
           <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.jenkins-ci.tools</groupId>
+        <artifactId>maven-hpi-plugin</artifactId>
+        <configuration>
+          <pluginFirstClassLoader>true</pluginFirstClassLoader>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -53,11 +61,24 @@
 
   <developers>
     <developer>
-      <id>advinst</id>
+      <id>advinst</id> 
       <name>Advanced Installer</name>
       <email>support@advancedinstaller.com</email>
     </developer>
   </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>${jna.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna-platform</artifactId>
+      <version>${jna.version}</version>
+    </dependency>
+  </dependencies>
 
   <scm>
     <connection>scm:git:ssh://github.com/jenkinsci/advanced-installer-msi-builder-plugin.git</connection>

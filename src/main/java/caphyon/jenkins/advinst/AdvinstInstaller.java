@@ -8,9 +8,14 @@ import java.net.URLConnection;
 
 import javax.servlet.ServletException;
 
+import com.sun.jna.platform.win32.VerRsrc.VS_FIXEDFILEINFO;
+import com.sun.jna.platform.win32.VersionUtil;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -20,6 +25,7 @@ import hudson.Util;
 import hudson.model.Node;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
+import hudson.slaves.EnvironmentVariablesNodeProperty;
 import hudson.tools.ToolInstallation;
 import hudson.tools.ToolInstaller;
 import hudson.tools.ToolInstallerDescriptor;
@@ -33,6 +39,8 @@ public final class AdvinstInstaller extends ToolInstaller {
 
   private static final String kAdvinstUrlTemplate = "https://www.advancedinstaller.com/downloads/%s/advinst.msi";
   private static final VersionNumber kMinimumWindowsOsVersion = new VersionNumber("6.1"); //Windows 7
+  private static final VersionNumber kAdvinstRegVersionSwitch = new VersionNumber("14.6");
+  private static final String kAdvinstURLEnvVar = "advancedinstaller.url";
   private final String mAdvinstVersion;
   private final Secret mAdvinstLicense;
 
@@ -76,7 +84,7 @@ public final class AdvinstInstaller extends ToolInstaller {
     if (isUpToDate(advinstRootPath, node))
       return advinstRootPath;
 
-    final String downloadUrl = String.format(kAdvinstUrlTemplate, this.mAdvinstVersion);
+    final String downloadUrl = getAdvinstDownloadUrl(node);
     final String message = Messages.MSG_ADVINST_INSTALL(downloadUrl, advinstRootPath, node.getDisplayName());
     listener.getLogger().append(message);
 
@@ -167,9 +175,16 @@ public final class AdvinstInstaller extends ToolInstaller {
     if (null == licenseID)
       return true;
 
+    final VersionNumber advinstVersion = getFileVerison(advinstPath.sibling("advinst.exe"));
+
+    String registerCommand = "/RegisterCI";
+    if (advinstVersion.isOlderThan(kAdvinstRegVersionSwitch)) {
+      registerCommand = "/Register";
+    }
+
     Launcher launcher = node.createLauncher(listener);
     ArgumentListBuilder args = new ArgumentListBuilder();
-    args.add(advinstPath.getRemote(), "/register", licenseID.getPlainText());
+    args.add(advinstPath.getRemote(), registerCommand, licenseID.getPlainText());
     ProcStarter ps = launcher.new ProcStarter();
     ps = ps.cmds(args);
     ps = ps.masks(false, false, true);
@@ -177,6 +192,33 @@ public final class AdvinstInstaller extends ToolInstaller {
     Proc proc = launcher.launch(ps);
     int retcode = proc.join();
     return retcode == 0;
+  }
+
+  private VersionNumber getFileVerison(final FilePath advinstPath) {
+
+    VS_FIXEDFILEINFO verInfo = VersionUtil.getFileVersionInfo(advinstPath.getRemote());
+
+    final String verString = String.format("%d.%d.%d.%d", verInfo.getProductVersionMajor(),
+        verInfo.getProductVersionMinor(), verInfo.getProductVersionRevision(), verInfo.getProductVersionBuild());
+
+    return new VersionNumber(verString);
+  }
+
+  private String getAdvinstDownloadUrl(Node node) {
+    String downloadUrl;
+
+    EnvVars envVars = new EnvVars();
+    EnvironmentVariablesNodeProperty env = node.getNodeProperties().get(EnvironmentVariablesNodeProperty.class);
+    if (env != null) {
+      envVars.putAll(env.getEnvVars());
+    }
+    if (envVars.containsKey(kAdvinstURLEnvVar)) {
+      downloadUrl = envVars.get(kAdvinstURLEnvVar);
+    } else {
+      downloadUrl = String.format(kAdvinstUrlTemplate, this.mAdvinstVersion);
+    }
+
+    return downloadUrl;
   }
 
   @Extension
