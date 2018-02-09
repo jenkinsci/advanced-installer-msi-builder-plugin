@@ -2,6 +2,13 @@
 
 Changelog of Advanced Installer plugin for Jenkins.
 
+## Advanced Installer Msi Builder Plugin  2.0.1
+
+Improvements:
+
+* Added specific license registration support (requires [Advanced Installer 14.6](https://www.advancedinstaller.com/version-history.html) ) 
+
+
 ## Advanced Installer Msi Builder Plugin  2.0
 
 Features:
