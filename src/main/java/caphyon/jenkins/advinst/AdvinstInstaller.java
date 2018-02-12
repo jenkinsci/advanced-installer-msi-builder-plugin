@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import javax.servlet.ServletException;
-
 import com.sun.jna.platform.win32.VerRsrc.VS_FIXEDFILEINFO;
 import com.sun.jna.platform.win32.VersionUtil;
 
@@ -175,7 +174,9 @@ public final class AdvinstInstaller extends ToolInstaller {
     if (null == licenseID)
       return true;
 
-    final VersionNumber advinstVersion = getFileVerison(advinstPath.sibling("advinst.exe"));
+    final FilePath advinstExe = advinstPath.sibling("advinst.exe");
+    final VersionNumber advinstVersion = new VersionNumber(
+        node.getChannel().call(new GetWin32FileVersion(advinstExe.getRemote())));
 
     String registerCommand = "/RegisterCI";
     if (advinstVersion.isOlderThan(kAdvinstRegVersionSwitch)) {
@@ -192,16 +193,6 @@ public final class AdvinstInstaller extends ToolInstaller {
     Proc proc = launcher.launch(ps);
     int retcode = proc.join();
     return retcode == 0;
-  }
-
-  private VersionNumber getFileVerison(final FilePath advinstPath) {
-
-    VS_FIXEDFILEINFO verInfo = VersionUtil.getFileVersionInfo(advinstPath.getRemote());
-
-    final String verString = String.format("%d.%d.%d.%d", verInfo.getProductVersionMajor(),
-        verInfo.getProductVersionMinor(), verInfo.getProductVersionRevision(), verInfo.getProductVersionBuild());
-
-    return new VersionNumber(verString);
   }
 
   private String getAdvinstDownloadUrl(Node node) {
@@ -259,6 +250,23 @@ public final class AdvinstInstaller extends ToolInstaller {
         values[i] = System.getProperty(properties[i]);
       }
       return values;
+    }
+  }
+
+  private static class GetWin32FileVersion extends MasterToSlaveCallable<String, InterruptedException> {
+    private static final long serialVersionUID = 1L;
+    private final String filePath;
+
+    GetWin32FileVersion(String filePath) {
+      this.filePath = filePath;
+    }
+
+    public String call() {
+      VS_FIXEDFILEINFO verInfo = VersionUtil.getFileVersionInfo(this.filePath);
+      final String verString = String.format("%d.%d.%d.%d", verInfo.getProductVersionMajor(),
+          verInfo.getProductVersionMinor(), verInfo.getProductVersionRevision(), 
+          verInfo.getProductVersionBuild());
+      return verString;
     }
   }
 
