@@ -168,6 +168,7 @@ public final class AdvinstInstaller extends ToolInstaller {
     return retcode == 0;
   }
 
+  @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
   private boolean registerAdvinst(final FilePath advinstPath, final Secret licenseID, Node node, TaskListener listener)
       throws IOException, InterruptedException {
 
