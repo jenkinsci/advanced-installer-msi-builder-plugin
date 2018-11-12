@@ -178,7 +178,8 @@ public final class AdvinstInstaller extends ToolInstaller {
   private boolean registerAdvinst(final FilePath advinstPath, final Secret licenseID, Node node, TaskListener listener)
       throws IOException, InterruptedException {
 
-    if (null == licenseID)
+    String plainLicenseId = Secret.toString(licenseID);
+    if (plainLicenseId.isEmpty())
       return true;
 
     final FilePath advinstExe = advinstPath.sibling("advinst.exe");
@@ -192,7 +193,7 @@ public final class AdvinstInstaller extends ToolInstaller {
 
     Launcher launcher = node.createLauncher(listener);
     ArgumentListBuilder args = new ArgumentListBuilder();
-    args.add(advinstPath.getRemote(), registerCommand, licenseID.getPlainText());
+    args.add(advinstPath.getRemote(), registerCommand, plainLicenseId);
     ProcStarter ps = launcher.new ProcStarter();
     ps = ps.cmds(args);
     ps = ps.masks(false, false, true);
