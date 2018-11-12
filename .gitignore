@@ -9,3 +9,4 @@ nb-configuration.xml
 *.project
 *.classpath
 release.properties
+.factorypath
