@@ -74,7 +74,7 @@ public final class AdvinstInstaller extends ToolInstaller {
       throw new InstallationFailedException(Messages.ERR_ADVINST_UNSUPPORTED_OS());
     }
 
-    //Verify the target OS version is higher that 6.1 
+    //Verify the target OS version is higher that 6.1
     if (kMinimumWindowsOsVersion.compareTo(new VersionNumber(properties[1])) > 0) {
       throw new InstallationFailedException(Messages.ERR_ADVINST_UNSUPPORTED_OS_VERSION());
     }
@@ -160,9 +160,15 @@ public final class AdvinstInstaller extends ToolInstaller {
 
     Launcher launcher = node.createLauncher(listener);
     ArgumentListBuilder args = new ArgumentListBuilder();
-    args.add("msiexec.exe", "/a", msiPath.getRemote(), "TARGETDIR=" + targetDir.getRemote(), "/qn");
+
+    args.add("cmd.exe");
+    args.add("/c");
+    args.addQuoted(
+      String.format("msiexec /a \"%s\" TARGETDIR=\"%s\" /qn", msiPath.getRemote(), targetDir.getRemote()));
+
     ProcStarter ps = launcher.new ProcStarter();
     ps = ps.cmds(args).stdout(listener);
+    ps = ps.masks(null);
     Proc proc = launcher.launch(ps);
     int retcode = proc.join();
     return retcode == 0;
@@ -265,7 +271,7 @@ public final class AdvinstInstaller extends ToolInstaller {
     public String call() {
       VS_FIXEDFILEINFO verInfo = VersionUtil.getFileVersionInfo(this.filePath);
       final String verString = String.format("%d.%d.%d.%d", verInfo.getProductVersionMajor(),
-          verInfo.getProductVersionMinor(), verInfo.getProductVersionRevision(), 
+          verInfo.getProductVersionMinor(), verInfo.getProductVersionRevision(),
           verInfo.getProductVersionBuild());
       return verString;
     }
