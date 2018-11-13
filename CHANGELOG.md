@@ -2,6 +2,13 @@
 
 Changelog of Advanced Installer plugin for Jenkins.
 
+## Advanced Installer Msi Builder Plugin  2.0.3
+
+Bugs:
+
+* Fixed issue which prevented Advanced Installer to be deployed on nodes where JENKINS_HOME path contained spaces.
+* Fixed issue which prevented Advanced Installer to be deployed when no License ID was specified.
+
 ## Advanced Installer Msi Builder Plugin  2.0.2
 
 Bugs:
@@ -12,8 +19,7 @@ Bugs:
 
 Improvements:
 
-* Added specific license registration support (requires [Advanced Installer 14.6](https://www.advancedinstaller.com/version-history.html) ) 
-
+* Added specific license registration support (requires [Advanced Installer 14.6](https://www.advancedinstaller.com/version-history.html) )
 
 ## Advanced Installer Msi Builder Plugin  2.0
 
