@@ -42,12 +42,14 @@ public final class AdvinstInstaller extends ToolInstaller {
   private static final String kAdvinstURLEnvVar = "advancedinstaller.url";
   private final String mAdvinstVersion;
   private final Secret mAdvinstLicense;
+  private final boolean mEnablePowerShell;
 
   @DataBoundConstructor
-  public AdvinstInstaller(String label, String advinstVersion, Secret advinstLicense) {
+  public AdvinstInstaller(String label, String advinstVersion, Secret advinstLicense, boolean advinstEnablePowerShell) {
     super(label);
     this.mAdvinstVersion = Util.fixEmptyAndTrim(advinstVersion);
     this.mAdvinstLicense = advinstLicense;
+    this.mEnablePowerShell = advinstEnablePowerShell;
   }
 
   public String getAdvinstVersion() {
@@ -105,6 +107,10 @@ public final class AdvinstInstaller extends ToolInstaller {
         FilePath advinstComPath = advinstRootPath.child(AdvinstInstallation.advinstComSubPath);
         if (!registerAdvinst(advinstComPath, mAdvinstLicense, node, listener)) {
           throw new InstallationFailedException(Messages.ERR_ADVINST_REGISTER_FAILED());
+        }
+
+        if (!enablePowerShell(advinstComPath, mEnablePowerShell, node, listener)) {
+          throw new InstallationFailedException(Messages.ERR_ADVINST_REGISTER_COM_FAILED());
         }
       }
 
@@ -220,6 +226,24 @@ public final class AdvinstInstaller extends ToolInstaller {
     return downloadUrl;
   }
 
+  private boolean enablePowerShell(final FilePath advinstPath, boolean enablePowerShell, Node node, TaskListener listener) 
+      throws IOException, InterruptedException {
+
+    if (!enablePowerShell)
+      return true;
+      
+    String registerCommand = "/REGSERVER";
+    Launcher launcher = node.createLauncher(listener);
+    ArgumentListBuilder args = new ArgumentListBuilder();
+    args.add(advinstPath.getRemote(), registerCommand);
+    ProcStarter ps = launcher.new ProcStarter();
+    ps = ps.cmds(args);
+    ps = ps.stdout(listener);
+    Proc proc = launcher.launch(ps);
+    int retcode = proc.join();
+    return retcode == 0;
+  }
+
   @Extension
   public static class DescriptorImpl extends ToolInstallerDescriptor<AdvinstInstaller> {
 
@@ -280,6 +304,9 @@ public final class AdvinstInstaller extends ToolInstaller {
 
   // Extend IOException so we can throw and stop the build if installation fails
   static class InstallationFailedException extends IOException {
+
+    private static final long serialVersionUID = -1714895928033107556L;
+
     InstallationFailedException(String message) {
       super(message);
     }

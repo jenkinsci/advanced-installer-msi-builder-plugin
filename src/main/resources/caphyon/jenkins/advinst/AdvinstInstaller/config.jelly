@@ -12,4 +12,7 @@
    <f:entry title="${%AdvinstLicense}" field="advinstLicense">
     <f:password />
   </f:entry>
+  <f:entry title="${%AdvinstEnablePowerShell}" field="advinstEnablePowerShell">
+    <f:checkbox/>
+  </f:entry>
 </j:jelly>
