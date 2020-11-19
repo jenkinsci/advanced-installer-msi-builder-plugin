@@ -44,7 +44,7 @@ public class AdvinstTool
 
   public boolean executeCommands(final List<String> commands,
                                  final FilePath aipPath,
-                                 AbstractBuild build,
+                                 AbstractBuild<?,?> build,
                                  Launcher launcher,
                                  BuildListener listener,
                                  EnvVars env) throws AdvinstException

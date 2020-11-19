@@ -25,7 +25,7 @@ public class AdvinstParametersProcessor
 
   public AdvinstParametersProcessor(final AdvinstParameters uiParams,
                                     final FilePath aipPath,
-                                    final AbstractBuild build,
+                                    final AbstractBuild<?,?> build,
                                     final EnvVars envVars)
   {
     mEnvVars = envVars;

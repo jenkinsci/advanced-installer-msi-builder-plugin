@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.StaplerRequest;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -16,19 +16,10 @@ import hudson.model.BuildListener;
 import hudson.model.Computer;
 import hudson.model.Node;
 import hudson.model.Result;
-import hudson.model.FreeStyleProject.DescriptorImpl;
 import hudson.tasks.Builder;
 
 /**
  * Sample {@link Builder}.
- * <p/>
- * <p/>
- * When the user configures the project and enables this builder,
- * {@link DescriptorImpl#newInstance(StaplerRequest)} is invoked and a new
- * {@link AdvinstBuilder} is created. The created instance is persisted to the
- * project configuration XML by using XStream, so this allows you to use
- * instance fields (like {@link #name}) to remember the configuration.
- * <p/>
  * <p/>
  * When a build is performed, the
  * {@link AdvinstBuilder#perform(AbstractBuild, Launcher, BuildListener)} method will be
@@ -76,7 +67,7 @@ public class AdvinstBuilder extends Builder {
    * @return success
    */
   @Override
-  public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
+  public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) {
     boolean success;
     try {
       EnvVars env = build.getEnvironment(listener);
@@ -196,6 +187,7 @@ public class AdvinstBuilder extends Builder {
     return advinstComPath;
   }
 
+  @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
   private FilePath getAdvinstAipPath(final AbstractBuild<?, ?> build, final Launcher launcher, final EnvVars env)
       throws AdvinstException {
     final String advinstAipPathParam = getAipProjectPath();

@@ -3,7 +3,6 @@ package caphyon.jenkins.advinst;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 
@@ -35,8 +34,6 @@ import net.sf.json.JSONObject;
 @Extension // This indicates to Jenkins that this is an implementation of an extension point.
 public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
 
-  //This logger writes to the Jenkins system log.
-  private static final Logger LOGGER = Logger.getLogger("jenkins.advinstbuilder");
   @CopyOnWrite
   private volatile AdvinstInstallation[] installations = new AdvinstInstallation[0];
 

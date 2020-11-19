@@ -13,6 +13,8 @@ package caphyon.jenkins.advinst;
 public class AdvinstException extends Exception
 {
 
+  private static final long serialVersionUID = -6308290342414398576L;
+
   public AdvinstException(String message, Throwable t)
   {
     super(message, t);
