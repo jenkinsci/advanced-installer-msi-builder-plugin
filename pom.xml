@@ -3,12 +3,16 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.5</version>
+    <version>3.57</version>
+    <relativePath />
   </parent>
  
   <properties>
-      <jenkins.version>2.5</jenkins.version>
-      <jna.version>4.5.1</jna.version>
+      <jenkins.version>2.89.3</jenkins.version>
+      <jna.version>5.6.0</jna.version>
+      <maven.compiler.target>1.8</maven.compiler.target>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <java.level>8</java.level>
   </properties>
 
   <groupId>org.jenkins-ci.plugins</groupId>
@@ -37,6 +41,7 @@
       <plugin>
         <groupId>org.jenkins-ci.tools</groupId>
         <artifactId>maven-hpi-plugin</artifactId>
+        <version>2.1</version>
         <configuration>
           <pluginFirstClassLoader>true</pluginFirstClassLoader>
         </configuration>
@@ -78,6 +83,7 @@
       <artifactId>jna-platform</artifactId>
       <version>${jna.version}</version>
     </dependency>
+    
   </dependencies>
 
   <scm>
