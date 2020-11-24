@@ -8,7 +8,7 @@
   </parent>
  
   <properties>
-      <jenkins.version>2.89.3</jenkins.version>
+      <jenkins.version>2.157</jenkins.version>
       <jna.version>5.6.0</jna.version>
       <maven.compiler.target>1.8</maven.compiler.target>
       <maven.compiler.source>1.8</maven.compiler.source>
@@ -83,7 +83,6 @@
       <artifactId>jna-platform</artifactId>
       <version>${jna.version}</version>
     </dependency>
-    
   </dependencies>
 
   <scm>
