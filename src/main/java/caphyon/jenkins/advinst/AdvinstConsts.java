@@ -32,11 +32,13 @@ class AdvinstConsts
   //--------------------------------------------------------------------------
   //Advinst parameters
   public static final String AdvinstParamAdvinstRootPath = "advinstRootPath";
+  public static final String AdvinstParamAdvinstRunType = "advinstRunType";
   public static final String AdvinstParamAipBuild = "aipProjectBuild";
   public static final String AdvinstParamAipPath = "aipProjectPath";
   public static final String AdvinstParamAipOutputFolder = "aipProjectOutputFolder";
   public static final String AdvinstParamAipOutputName = "aipProjectOutputName";
   public static final String AdvinstParamAipNoDigSig = "aipProjectNoDigitalSignature";
   public static final String AdvinstParamExtraCommands = "advinstExtraCommands";
-
+  public static final String AdvinstRunTypeDeploy = "deploy";
+  public static final String AdvinstRunTypeBuild = "build";
 }
