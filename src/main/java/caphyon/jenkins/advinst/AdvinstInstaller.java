@@ -60,6 +60,11 @@ public final class AdvinstInstaller extends ToolInstaller {
     return mAdvinstLicense;
   }
 
+  public boolean getAdvinstEnablePowerShell()
+  {
+    return mEnablePowerShell;
+  }
+
   @Override
   @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
   public FilePath performInstallation(ToolInstallation tool, Node node, TaskListener listener)
@@ -82,41 +87,43 @@ public final class AdvinstInstaller extends ToolInstaller {
     }
 
     final FilePath advinstRootPath = preferredLocation(tool, node);
-    if (isUpToDate(advinstRootPath, node))
-      return advinstRootPath;
+    if (!isUpToDate(advinstRootPath, node))
+    {
+      final String downloadUrl = getAdvinstDownloadUrl(node);
+      final String message = Messages.MSG_ADVINST_INSTALL(downloadUrl, advinstRootPath, node.getDisplayName());
+      listener.getLogger().append(message);
 
-    final String downloadUrl = getAdvinstDownloadUrl(node);
-    final String message = Messages.MSG_ADVINST_INSTALL(downloadUrl, advinstRootPath, node.getDisplayName());
-    listener.getLogger().append(message);
+      try (FilePathAutoDeleter advistRootPathDeleter = new FilePathAutoDeleter(advinstRootPath)) {
+        // Download the advinst.msi in the working dir temp folder.
+        try (FilePathAutoDeleter tempDownloadDir = new FilePathAutoDeleter(
+            node.getRootPath().createTempDir("tmpAdvinstDld", null))) {
 
-    try (FilePathAutoDeleter advistRootPathDeleter = new FilePathAutoDeleter(advinstRootPath)) {
-      //Download the advinst.msi in the working dir temp folder.
-      try (FilePathAutoDeleter tempDownloadDir = new FilePathAutoDeleter(
-          node.getRootPath().createTempDir("tmpAdvinstDld", null))) {
+          FilePath tempDownloadFile = tempDownloadDir.GetFilePath().child("advinst.msi");
 
-        FilePath tempDownloadFile = tempDownloadDir.GetFilePath().child("advinst.msi");
+          if (!downloadFile(downloadUrl, tempDownloadFile, listener)) {
+            throw new InstallationFailedException(Messages.ERR_ADVINST_DOWNLOAD_FAILED(downloadUrl, tempDownloadFile));
+          }
 
-        if (!downloadFile(downloadUrl, tempDownloadFile, listener)) {
-          throw new InstallationFailedException(Messages.ERR_ADVINST_DOWNLOAD_FAILED(downloadUrl, tempDownloadFile));
+          if (!extractMSI(tempDownloadFile, advinstRootPath, node, listener)) {
+            throw new InstallationFailedException(Messages.ERR_ADVINST_EXTRACT_FAILED(downloadUrl, advinstRootPath));
+          }
         }
-
-        if (!extractMSI(tempDownloadFile, advinstRootPath, node, listener)) {
-          throw new InstallationFailedException(Messages.ERR_ADVINST_EXTRACT_FAILED(downloadUrl, advinstRootPath));
-        }
-
-        FilePath advinstComPath = advinstRootPath.child(AdvinstInstallation.advinstComSubPath);
-        if (!registerAdvinst(advinstComPath, mAdvinstLicense, node, listener)) {
-          throw new InstallationFailedException(Messages.ERR_ADVINST_REGISTER_FAILED());
-        }
-
-        if (!enablePowerShell(advinstComPath, mEnablePowerShell, node, listener)) {
-          throw new InstallationFailedException(Messages.ERR_ADVINST_REGISTER_COM_FAILED());
-        }
+        advistRootPathDeleter.Release();
       }
-
-      advistRootPathDeleter.Release();
     }
 
+    FilePath advinstComPath = advinstRootPath.child(AdvinstInstallation.advinstComSubPath);
+    if (advinstComPath.exists())
+    {
+      if (!registerAdvinst(advinstComPath, mAdvinstLicense, node, listener)) {
+        throw new InstallationFailedException(Messages.ERR_ADVINST_REGISTER_FAILED());
+      }
+
+      if (!enablePowerShell(advinstComPath, mEnablePowerShell, node, listener)) {
+        throw new InstallationFailedException(Messages.ERR_ADVINST_REGISTER_COM_FAILED());
+      }
+
+    }
     return advinstRootPath;
   }
 
