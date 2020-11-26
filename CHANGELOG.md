@@ -11,7 +11,7 @@ Features:
   * Deploy Advanced Installer tool
   * Deploy Advanced Installer tool and build project
 
-__If you are referencing an Advanced Installer version prior to 17.7, in order to use *Enable PowerShell support*, the build agent needs to run with elevated privileges. Versions 17.7 and later do not have this restriction.__
+__If you are referencing an Advanced Installer version prior to 17.7, in order to use *Enable PowerShell support* the build agent needs to run with elevated privileges. Versions 17.7 and later do not have this restriction.__
 
 ## Advanced Installer Msi Builder Plugin  2.0.3
 
