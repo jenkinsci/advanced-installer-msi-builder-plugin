@@ -2,7 +2,6 @@ package caphyon.jenkins.advinst;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,6 +9,7 @@ import javax.inject.Inject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
@@ -25,8 +25,9 @@ import hudson.tools.ToolProperty;
 import jenkins.security.MasterToSlaveCallable;
 
 public final class AdvinstInstallation extends ToolInstallation
-    implements EnvironmentSpecific<AdvinstInstallation>, NodeSpecific<AdvinstInstallation>, Serializable {
-
+    implements EnvironmentSpecific<AdvinstInstallation>, NodeSpecific<AdvinstInstallation> {
+  
+  private static final long serialVersionUID = -6715383276188462597L;
   private final String advinstHome;
   public static final String advinstComSubPath = "bin\\x86\\AdvancedInstaller.com";
 
@@ -44,8 +45,11 @@ public final class AdvinstInstallation extends ToolInstallation
     return super.getHome();
   }
 
+  @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
   public String getExecutable(Launcher launcher) throws IOException, InterruptedException {
     return launcher.getChannel().call(new MasterToSlaveCallable<String, IOException>() {
+      private static final long serialVersionUID = 8800376540325557778L;
+
       public String call() throws IOException {
         File exe = getExeFile();
         if (exe.exists()) {
@@ -85,7 +89,7 @@ public final class AdvinstInstallation extends ToolInstallation
 
     @Override
     public List<? extends ToolInstaller> getDefaultInstallers() {
-      return Collections.singletonList(new AdvinstInstaller(null, null, null));
+      return Collections.singletonList(new AdvinstInstaller(null, null, null, false));
     }
 
     @Override

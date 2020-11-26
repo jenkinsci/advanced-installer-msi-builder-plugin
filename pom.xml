@@ -3,17 +3,21 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.5</version>
+    <version>3.57</version>
+    <relativePath />
   </parent>
  
   <properties>
-      <jenkins.version>2.5</jenkins.version>
-      <jna.version>4.5.1</jna.version>
+      <jenkins.version>2.157</jenkins.version>
+      <jna.version>5.6.0</jna.version>
+      <maven.compiler.target>1.8</maven.compiler.target>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <java.level>8</java.level>
   </properties>
 
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>advanced-installer-msi-builder</artifactId>
-  <version>2.0.4-SNAPSHOT</version>
+  <version>2.1</version>
   <name>Advanced Installer Msi Builder Plugin</name>
   <description>This plugin builds Advanced Installer projects.</description>
   <packaging>hpi</packaging>
@@ -37,6 +41,7 @@
       <plugin>
         <groupId>org.jenkins-ci.tools</groupId>
         <artifactId>maven-hpi-plugin</artifactId>
+        <version>2.1</version>
         <configuration>
           <pluginFirstClassLoader>true</pluginFirstClassLoader>
         </configuration>
