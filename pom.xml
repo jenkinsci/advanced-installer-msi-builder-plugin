@@ -41,7 +41,7 @@
       <plugin>
         <groupId>org.jenkins-ci.tools</groupId>
         <artifactId>maven-hpi-plugin</artifactId>
-        <version>2.1</version>
+        <version>2.1.0-SNAPSHOT</version>
         <configuration>
           <pluginFirstClassLoader>true</pluginFirstClassLoader>
         </configuration>
@@ -92,6 +92,7 @@
     <tag>advanced-installer-msi-builder-2.1</tag>
   </scm>
 
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Advanced+Installer+Msi+Builder+Plugin</url>
+  <url>https://github.com/jenkinsci/advanced-installer-msi-builder-plugin</url>
 
 </project>
+
