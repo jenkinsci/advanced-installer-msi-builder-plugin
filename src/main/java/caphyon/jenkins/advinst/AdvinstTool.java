@@ -33,80 +33,59 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.util.ArgumentListBuilder;
 
-public class AdvinstTool
-{
+public final class AdvinstTool {
   private final String mAdvinstComPath;
 
-  public AdvinstTool(final String advinstComPath)
-  {
+  public AdvinstTool(final String advinstComPath) {
     this.mAdvinstComPath = advinstComPath;
   }
 
-  public boolean executeCommands(final List<String> commands,
-                                 final FilePath aipPath,
-                                 AbstractBuild<?,?> build,
-                                 Launcher launcher,
-                                 BuildListener listener,
-                                 EnvVars env) throws AdvinstException
-  {
+  public boolean executeCommands(final List<String> commands, final FilePath aipPath, final AbstractBuild<?, ?> build,
+      final Launcher launcher, final BuildListener listener, final EnvVars env) throws AdvinstException {
     FilePath aicFilePath = null;
-    try
-    {
-      if ( launcher.isUnix() )
-      {
+    try {
+      if (launcher.isUnix()) {
         throw new AdvinstException(Messages.ERR_ADVINST_UNSUPPORTED_OS());
       }
 
       FilePath pwd = build.getWorkspace();
-      if (null == pwd)
+      if (null == pwd) {
         return false;
+      }
 
       aicFilePath = createAicFile(pwd, commands);
-      if (null == aicFilePath)
+      if (null == aicFilePath) {
         throw new AdvinstException(Messages.ERR_ADVINST_FAILED_AIC());
+      }
 
       ArgumentListBuilder cmdExecArgs = new ArgumentListBuilder();
-      cmdExecArgs.add(mAdvinstComPath, "/execute",
-        aipPath.getRemote(), aicFilePath.getRemote());
+      cmdExecArgs.add(mAdvinstComPath, "/execute", aipPath.getRemote(), aicFilePath.getRemote());
 
       int result = launcher.launch().cmds(cmdExecArgs).envs(env).stdout(listener).pwd(pwd).join();
       return 0 == result;
 
-    }
-    catch (IOException e)
-    {
+    } catch (IOException e) {
       throw new AdvinstException(e);
-    }
-    catch (InterruptedException e)
-    {
+    } catch (InterruptedException e) {
       throw new AdvinstException(e);
-    }
-    finally
-    {
-      try
-      {
-        if (aicFilePath != null)
-        {
+    } finally {
+      try {
+        if (aicFilePath != null) {
           aicFilePath.delete();
         }
-      }
-      catch (IOException e)
-      {
+      } catch (IOException e) {
         throw new AdvinstException(e);
-      }
-      catch (InterruptedException e)
-      {
+      } catch (InterruptedException e) {
         throw new AdvinstException(e);
       }
     }
   }
 
-  private static FilePath createAicFile(final FilePath buildWorkspace, final List<String> aCommands) throws IOException, InterruptedException
-  {
+  private static FilePath createAicFile(final FilePath buildWorkspace, final List<String> aCommands)
+      throws IOException, InterruptedException {
     FilePath aicFile = buildWorkspace.createTempFile("aic", "aic");
-    StringBuffer fileContent =  new StringBuffer(AdvinstConsts.AdvinstAicHeader + "\r\n");
-    for (String command : aCommands)
-    {
+    StringBuffer fileContent = new StringBuffer(AdvinstConsts.AdvinstAicHeader + "\r\n");
+    for (String command : aCommands) {
       fileContent.append(command);
       fileContent.append("\r\n");
     }

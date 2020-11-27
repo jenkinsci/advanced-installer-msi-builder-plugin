@@ -12,4 +12,4 @@
   <f:entry title="${%AdvinstInstallHomeTitle}" field="home">
     <f:textbox />
   </f:entry>
-</j:jelly>
+</j:jelly> 

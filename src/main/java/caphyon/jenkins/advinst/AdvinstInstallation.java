@@ -26,13 +26,13 @@ import jenkins.security.MasterToSlaveCallable;
 
 public final class AdvinstInstallation extends ToolInstallation
     implements EnvironmentSpecific<AdvinstInstallation>, NodeSpecific<AdvinstInstallation> {
-  
+
   private static final long serialVersionUID = -6715383276188462597L;
   private final String advinstHome;
   public static final String advinstComSubPath = "bin\\x86\\AdvancedInstaller.com";
 
   @DataBoundConstructor
-  public AdvinstInstallation(String name, String home, List<? extends ToolProperty<?>> properties) {
+  public AdvinstInstallation(final String name, final String home, final List<? extends ToolProperty<?>> properties) {
     super(name, home, properties);
     this.advinstHome = getHome();
   }
@@ -46,7 +46,7 @@ public final class AdvinstInstallation extends ToolInstallation
   }
 
   @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-  public String getExecutable(Launcher launcher) throws IOException, InterruptedException {
+  public String getExecutable(final Launcher launcher) throws IOException, InterruptedException {
     return launcher.getChannel().call(new MasterToSlaveCallable<String, IOException>() {
       private static final long serialVersionUID = 8800376540325557778L;
 
@@ -66,19 +66,18 @@ public final class AdvinstInstallation extends ToolInstallation
   }
 
   @Override
-  public AdvinstInstallation forNode(Node node, TaskListener log) throws IOException, InterruptedException {
+  public AdvinstInstallation forNode(final Node node, final TaskListener log) throws IOException, InterruptedException {
     return new AdvinstInstallation(getName(), translateFor(node, log), getProperties().toList());
   }
 
   @Override
-  public AdvinstInstallation forEnvironment(EnvVars environment) {
+  public AdvinstInstallation forEnvironment(final EnvVars environment) {
     return new AdvinstInstallation(getName(), environment.expand(getHome()), getProperties().toList());
   }
 
   @Extension
-  public static class DescriptorImpl extends ToolDescriptor<AdvinstInstallation> {
+  public static final class DescriptorImpl extends ToolDescriptor<AdvinstInstallation> {
 
-    
     @Inject
     private AdvinstDescriptorImpl mAdvinstDescriptor;
 
@@ -98,7 +97,7 @@ public final class AdvinstInstallation extends ToolInstallation
     }
 
     @Override
-    public void setInstallations(AdvinstInstallation... installations) {
+    public void setInstallations(final AdvinstInstallation... installations) {
       mAdvinstDescriptor.setInstallations(installations);
     }
   }

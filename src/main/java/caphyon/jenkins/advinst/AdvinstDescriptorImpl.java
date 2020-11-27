@@ -25,13 +25,13 @@ import net.sf.json.JSONObject;
  * marked as public so that it can be accessed from views.
  *
  * <p>
- * See
- * <tt>src/main/resources/caphyon/jenkins/AdvinstBuilder/*.jelly</tt>
- * for the actual HTML fragment for the configuration screen.
+ * See <tt>src/main/resources/caphyon/jenkins/AdvinstBuilder/*.jelly</tt> for
+ * the actual HTML fragment for the configuration screen.
  *
  * @author Ciprian Burca
  */
-@Extension // This indicates to Jenkins that this is an implementation of an extension point.
+@Extension // This indicates to Jenkins that this is an implementation of an extension
+           // point.
 public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
 
   @CopyOnWrite
@@ -42,16 +42,15 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
     load();
   }
 
-  public ListBoxModel doFillInstallNameItems()
-  {
+  public ListBoxModel doFillInstallNameItems() {
     ListBoxModel items = new ListBoxModel();
-    for (AdvinstInstallation inst  : getInstallations()) {
+    for (AdvinstInstallation inst : getInstallations()) {
       items.add(new ListBoxModel.Option(inst.getName()));
     }
     return items;
   }
 
-  public FormValidation doCheckAipProjectPath(@QueryParameter String value) throws IOException, ServletException {
+  public FormValidation doCheckAipProjectPath(final @QueryParameter String value) throws IOException, ServletException {
     if (value == null || value.length() == 0) {
       return FormValidation.error(Messages.ERR_REQUIRED());
     }
@@ -59,8 +58,8 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
     return FormValidation.ok();
   }
 
-  public FormValidation doCheckAipProjectOutputFolder(@QueryParameter String value,
-      @QueryParameter String aipProjectBuild) throws IOException, ServletException {
+  public FormValidation doCheckAipProjectOutputFolder(final @QueryParameter String value,
+      final @QueryParameter String aipProjectBuild) throws IOException, ServletException {
     if (value != null && !value.isEmpty()) {
       if (aipProjectBuild == null || aipProjectBuild.length() == 0) {
         return FormValidation.error(Messages.ERR_BUILD_NAME_REQUIRED());
@@ -69,8 +68,8 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
     return FormValidation.ok();
   }
 
-  public FormValidation doCheckAipProjectOutputName(@QueryParameter String value,
-      @QueryParameter String aipProjectBuild) throws IOException, ServletException {
+  public FormValidation doCheckAipProjectOutputName(final @QueryParameter String value,
+      final @QueryParameter String aipProjectBuild) throws IOException, ServletException {
     if (value != null && !value.isEmpty()) {
       if (aipProjectBuild == null || aipProjectBuild.length() == 0) {
         return FormValidation.error(Messages.ERR_BUILD_NAME_REQUIRED());
@@ -80,7 +79,7 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
   }
 
   @Override
-  public boolean isApplicable(Class<? extends AbstractProject> aClass) {
+  public boolean isApplicable(final Class<? extends AbstractProject> aClass) {
     // Indicates that this builder can be used with all kinds of project types
     return true;
   }
@@ -93,7 +92,7 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
     return Messages.ADVINST_INVOKE();
   }
 
-  public boolean configure(StaplerRequest req, JSONObject formData) throws Descriptor.FormException {
+  public boolean configure(final StaplerRequest req, final JSONObject formData) throws Descriptor.FormException {
     save();
     return super.configure(req, formData);
   }
@@ -102,7 +101,7 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
     return ToolInstallation.all().get(AdvinstInstallation.DescriptorImpl.class);
   }
 
-  protected void convert(Map<String, Object> oldPropertyBag) {
+  protected void convertfinal(final Map<String, Object> oldPropertyBag) {
     if (oldPropertyBag.containsKey("installations")) {
       installations = (AdvinstInstallation[]) oldPropertyBag.get("installations");
     }
@@ -112,7 +111,7 @@ public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
     return Arrays.copyOf(installations, installations.length);
   }
 
-  public void setInstallations(AdvinstInstallation... installations) {
+  public void setInstallations(final AdvinstInstallation... installations) {
     this.installations = installations;
     save();
   }

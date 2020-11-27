@@ -37,7 +37,7 @@ import jenkins.security.MasterToSlaveCallable;
 public final class AdvinstInstaller extends ToolInstaller {
 
   private static final String kAdvinstUrlTemplate = "https://www.advancedinstaller.com/downloads/%s/advinst.msi";
-  private static final VersionNumber kMinimumWindowsOsVersion = new VersionNumber("6.1"); //Windows 7
+  private static final VersionNumber kMinimumWindowsOsVersion = new VersionNumber("6.1"); // Windows 7
   private static final VersionNumber kAdvinstRegVersionSwitch = new VersionNumber("14.6");
   private static final String kAdvinstURLEnvVar = "advancedinstaller.url";
   private final String mAdvinstVersion;
@@ -45,7 +45,8 @@ public final class AdvinstInstaller extends ToolInstaller {
   private final boolean mEnablePowerShell;
 
   @DataBoundConstructor
-  public AdvinstInstaller(String label, String advinstVersion, Secret advinstLicense, boolean advinstEnablePowerShell) {
+  public AdvinstInstaller(final String label, final String advinstVersion, final Secret advinstLicense,
+      final boolean advinstEnablePowerShell) {
     super(label);
     this.mAdvinstVersion = Util.fixEmptyAndTrim(advinstVersion);
     this.mAdvinstLicense = advinstLicense;
@@ -60,35 +61,34 @@ public final class AdvinstInstaller extends ToolInstaller {
     return mAdvinstLicense;
   }
 
-  public boolean getAdvinstEnablePowerShell()
-  {
+  public boolean getAdvinstEnablePowerShell() {
     return mEnablePowerShell;
   }
 
   @Override
   @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-  public FilePath performInstallation(ToolInstallation tool, Node node, TaskListener listener)
+  public FilePath performInstallation(final ToolInstallation tool, final Node node, final TaskListener listener)
       throws IOException, InterruptedException {
 
     // Gather properties for the node to install on
     VirtualChannel channel = node.getChannel();
-    if (null == channel)
+    if (null == channel) {
       throw new InstallationFailedException(Messages.ERR_ADVINST_INSTALL_FAILED());
+    }
     String[] properties = channel.call(new GetSystemProperties("os.name", "os.version"));
 
-    //Verify the targe os is Windows.
+    // Verify the targe os is Windows.
     if (!properties[0].toLowerCase().contains("windows")) {
       throw new InstallationFailedException(Messages.ERR_ADVINST_UNSUPPORTED_OS());
     }
 
-    //Verify the target OS version is higher that 6.1
+    // Verify the target OS version is higher that 6.1
     if (kMinimumWindowsOsVersion.compareTo(new VersionNumber(properties[1])) > 0) {
       throw new InstallationFailedException(Messages.ERR_ADVINST_UNSUPPORTED_OS_VERSION());
     }
 
     final FilePath advinstRootPath = preferredLocation(tool, node);
-    if (!isUpToDate(advinstRootPath, node))
-    {
+    if (!isUpToDate(advinstRootPath, node)) {
       final String downloadUrl = getAdvinstDownloadUrl(node);
       final String message = Messages.MSG_ADVINST_INSTALL(downloadUrl, advinstRootPath, node.getDisplayName());
       listener.getLogger().append(message);
@@ -98,7 +98,7 @@ public final class AdvinstInstaller extends ToolInstaller {
         try (FilePathAutoDeleter tempDownloadDir = new FilePathAutoDeleter(
             node.getRootPath().createTempDir("tmpAdvinstDld", null))) {
 
-          FilePath tempDownloadFile = tempDownloadDir.GetFilePath().child("advinst.msi");
+          FilePath tempDownloadFile = tempDownloadDir.getFilePath().child("advinst.msi");
 
           if (!downloadFile(downloadUrl, tempDownloadFile, listener)) {
             throw new InstallationFailedException(Messages.ERR_ADVINST_DOWNLOAD_FAILED(downloadUrl, tempDownloadFile));
@@ -108,13 +108,12 @@ public final class AdvinstInstaller extends ToolInstaller {
             throw new InstallationFailedException(Messages.ERR_ADVINST_EXTRACT_FAILED(downloadUrl, advinstRootPath));
           }
         }
-        advistRootPathDeleter.Release();
+        advistRootPathDeleter.release();
       }
     }
 
     FilePath advinstComPath = advinstRootPath.child(AdvinstInstallation.advinstComSubPath);
-    if (advinstComPath.exists())
-    {
+    if (advinstComPath.exists()) {
       if (!registerAdvinst(advinstComPath, mAdvinstLicense, node, listener)) {
         throw new InstallationFailedException(Messages.ERR_ADVINST_REGISTER_FAILED());
       }
@@ -127,17 +126,19 @@ public final class AdvinstInstaller extends ToolInstaller {
     return advinstRootPath;
   }
 
-  private boolean isUpToDate(final FilePath expectedRoot, Node node) throws IOException, InterruptedException {
+  private boolean isUpToDate(final FilePath expectedRoot, final Node node) throws IOException, InterruptedException {
 
     FilePath advinstComPath = expectedRoot.child(AdvinstInstallation.advinstComSubPath);
-    //Check if the advinst executable exists.
-    if (!advinstComPath.exists())
+    // Check if the advinst executable exists.
+    if (!advinstComPath.exists()) {
       return false;
+    }
 
     return true;
   }
 
-  private boolean downloadFile(String fileURL, FilePath targetFile, TaskListener listener) throws IOException {
+  private boolean downloadFile(final String fileURL, final FilePath targetFile, final TaskListener listener)
+      throws IOException {
     InputStream is = null;
     OutputStream os = null;
 
@@ -149,7 +150,8 @@ public final class AdvinstInstaller extends ToolInstaller {
       is = conn.getInputStream();
       listener.getLogger().append(Messages.MSG_ADVINST_DOWNLOAD_PROGRESS(fileURL, targetFile.getRemote()));
       os = targetFile.write();
-      final byte[] buf = new byte[8192];
+      final int bufferSize = 8192;
+      final byte[] buf = new byte[bufferSize];
       int i = 0;
       while ((i = is.read(buf)) != -1) {
         os.write(buf, 0, i);
@@ -168,16 +170,15 @@ public final class AdvinstInstaller extends ToolInstaller {
     return true;
   }
 
-  private boolean extractMSI(FilePath msiPath, FilePath targetDir, Node node, TaskListener listener)
-      throws IOException, InterruptedException {
+  private boolean extractMSI(final FilePath msiPath, final FilePath targetDir, final Node node,
+      final TaskListener listener) throws IOException, InterruptedException {
 
     Launcher launcher = node.createLauncher(listener);
     ArgumentListBuilder args = new ArgumentListBuilder();
 
     args.add("cmd.exe");
     args.add("/c");
-    args.addQuoted(
-      String.format("msiexec /a \"%s\" TARGETDIR=\"%s\" /qn", msiPath.getRemote(), targetDir.getRemote()));
+    args.addQuoted(String.format("msiexec /a \"%s\" TARGETDIR=\"%s\" /qn", msiPath.getRemote(), targetDir.getRemote()));
 
     ProcStarter ps = launcher.new ProcStarter();
     ps = ps.cmds(args).stdout(listener);
@@ -188,12 +189,13 @@ public final class AdvinstInstaller extends ToolInstaller {
   }
 
   @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-  private boolean registerAdvinst(final FilePath advinstPath, final Secret licenseID, Node node, TaskListener listener)
-      throws IOException, InterruptedException {
+  private boolean registerAdvinst(final FilePath advinstPath, final Secret licenseID, final Node node,
+      final TaskListener listener) throws IOException, InterruptedException {
 
     String plainLicenseId = Secret.toString(licenseID);
-    if (plainLicenseId.isEmpty())
+    if (plainLicenseId.isEmpty()) {
       return true;
+    }
 
     final FilePath advinstExe = advinstPath.sibling("advinst.exe");
     final VersionNumber advinstVersion = new VersionNumber(
@@ -216,7 +218,7 @@ public final class AdvinstInstaller extends ToolInstaller {
     return retcode == 0;
   }
 
-  private String getAdvinstDownloadUrl(Node node) {
+  private String getAdvinstDownloadUrl(final Node node) {
     String downloadUrl;
 
     EnvVars envVars = new EnvVars();
@@ -233,12 +235,13 @@ public final class AdvinstInstaller extends ToolInstaller {
     return downloadUrl;
   }
 
-  private boolean enablePowerShell(final FilePath advinstPath, boolean enablePowerShell, Node node, TaskListener listener) 
-      throws IOException, InterruptedException {
+  private boolean enablePowerShell(final FilePath advinstPath, final boolean enablePowerShell, final Node node,
+      final TaskListener listener) throws IOException, InterruptedException {
 
-    if (!enablePowerShell)
+    if (!enablePowerShell) {
       return true;
-      
+    }
+
     String registerCommand = "/REGSERVER";
     Launcher launcher = node.createLauncher(listener);
     ArgumentListBuilder args = new ArgumentListBuilder();
@@ -252,7 +255,7 @@ public final class AdvinstInstaller extends ToolInstaller {
   }
 
   @Extension
-  public static class DescriptorImpl extends ToolInstallerDescriptor<AdvinstInstaller> {
+  public static final class DescriptorImpl extends ToolInstallerDescriptor<AdvinstInstaller> {
 
     @Override
     public String getDisplayName() {
@@ -260,11 +263,12 @@ public final class AdvinstInstaller extends ToolInstaller {
     }
 
     @Override
-    public boolean isApplicable(Class<? extends ToolInstallation> toolType) {
+    public boolean isApplicable(final Class<? extends ToolInstallation> toolType) {
       return toolType == AdvinstInstallation.class;
     }
 
-    public FormValidation doCheckAdvinstVersion(@QueryParameter String value) throws IOException, ServletException {
+    public FormValidation doCheckAdvinstVersion(final @QueryParameter String value)
+        throws IOException, ServletException {
       if (value == null || value.length() == 0) {
         return FormValidation.error(Messages.ERR_REQUIRED());
       }
@@ -279,7 +283,7 @@ public final class AdvinstInstaller extends ToolInstaller {
 
     private final String[] properties;
 
-    GetSystemProperties(String... properties) {
+    GetSystemProperties(final String... properties) {
       this.properties = properties;
     }
 
@@ -296,15 +300,14 @@ public final class AdvinstInstaller extends ToolInstaller {
     private static final long serialVersionUID = 1L;
     private final String filePath;
 
-    GetWin32FileVersion(String filePath) {
+    GetWin32FileVersion(final String filePath) {
       this.filePath = filePath;
     }
 
     public String call() {
       VS_FIXEDFILEINFO verInfo = VersionUtil.getFileVersionInfo(this.filePath);
       final String verString = String.format("%d.%d.%d.%d", verInfo.getProductVersionMajor(),
-          verInfo.getProductVersionMinor(), verInfo.getProductVersionRevision(),
-          verInfo.getProductVersionBuild());
+          verInfo.getProductVersionMinor(), verInfo.getProductVersionRevision(), verInfo.getProductVersionBuild());
       return verString;
     }
   }
@@ -314,7 +317,7 @@ public final class AdvinstInstaller extends ToolInstaller {
 
     private static final long serialVersionUID = -1714895928033107556L;
 
-    InstallationFailedException(String message) {
+    InstallationFailedException(final String message) {
       super(message);
     }
   }
@@ -322,28 +325,30 @@ public final class AdvinstInstaller extends ToolInstaller {
   static class FilePathAutoDeleter implements AutoCloseable {
     private FilePath mFilePath;
 
-    public FilePath GetFilePath() {
+    FilePath getFilePath() {
       return mFilePath;
     }
 
-    public void Release() {
+    public void release() {
       mFilePath = null;
     }
 
-    public FilePathAutoDeleter(FilePath filePath) {
+    FilePathAutoDeleter(final FilePath filePath) {
       this.mFilePath = filePath;
     }
 
     @Override
     public void close() throws IOException, InterruptedException {
 
-      if (null == mFilePath || !mFilePath.exists())
+      if (null == mFilePath || !mFilePath.exists()) {
         return;
+      }
 
-      if (mFilePath.isDirectory())
+      if (mFilePath.isDirectory()) {
         mFilePath.deleteRecursive();
-      else
+      } else {
         mFilePath.delete();
+      }
     }
 
   }

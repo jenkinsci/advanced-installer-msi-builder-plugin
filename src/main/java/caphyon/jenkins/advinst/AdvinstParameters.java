@@ -27,52 +27,41 @@ package caphyon.jenkins.advinst;
 import org.apache.commons.lang.StringUtils;
 import java.util.Properties;
 
-public class AdvinstParameters
-{
+public final class AdvinstParameters {
 
   private final Properties mProperties;
 
-  public AdvinstParameters()
-  {
+  public AdvinstParameters() {
     this(new Properties());
   }
 
-  public AdvinstParameters(Properties mProperties)
-  {
-    this.mProperties = mProperties;
+  public AdvinstParameters(final Properties aProperties) {
+    this.mProperties = aProperties;
   }
 
-  public String get(String key, String defaultValue)
-  {
+  public String get(final String key, final String defaultValue) {
     String tmp = this.mProperties.getProperty(key);
     return (StringUtils.isEmpty(tmp)) ? defaultValue : tmp;
   }
 
-  public boolean get(String key, boolean defaultValue)
-  {
+  public boolean get(final String key, final boolean defaultValue) {
     boolean rvalue = defaultValue;
     String tmp = this.mProperties.getProperty(key);
-    if (tmp != null)
-    {
-      try
-      {
+    if (tmp != null) {
+      try {
         rvalue = Boolean.parseBoolean(tmp);
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
         // nothing to do
       }
     }
     return rvalue;
   }
 
-  public void set(String key, String value)
-  {
+  public void set(final String key, final String value) {
     this.mProperties.setProperty(key, value);
   }
 
-  public void set(String key, boolean value)
-  {
+  public void set(final String key, final boolean value) {
     set(key, String.valueOf(value));
   }
 }

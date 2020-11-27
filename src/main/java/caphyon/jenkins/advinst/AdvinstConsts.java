@@ -12,10 +12,12 @@ import java.io.File;
  *
  * @author Ciprian
  */
-class AdvinstConsts
-{
+final class AdvinstConsts {
 
-  //--------------------------------------------------------------------------
+  private AdvinstConsts() {
+  }
+
+  // --------------------------------------------------------------------------
   public static final String AdvinstExeApp = "advinst.exe";
   public static final String AdvinstComApp = "AdvancedInstaller.com";
 
@@ -24,13 +26,13 @@ class AdvinstConsts
   public static final String AdvinstAicHeader = ";aic";
   public static final String AdvinstBuildAll = "All";
 
-  //--------------------------------------------------------------------------
-  //Advinst commands
+  // --------------------------------------------------------------------------
+  // Advinst commands
   public static final String AdvinstCommandListBuilds = "ListBuilds";
   public static final String AdvinstCommandResetSig = "ResetSig";
 
-  //--------------------------------------------------------------------------
-  //Advinst parameters
+  // --------------------------------------------------------------------------
+  // Advinst parameters
   public static final String AdvinstParamAdvinstRootPath = "advinstRootPath";
   public static final String AdvinstParamAdvinstRunType = "advinstRunType";
   public static final String AdvinstParamAipBuild = "aipProjectBuild";

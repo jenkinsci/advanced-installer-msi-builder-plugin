@@ -30,19 +30,17 @@ import org.xml.sax.InputSource;
  *
  * @author Ciprian Burca
  */
-class AdvinstAipReader
-{
+class AdvinstAipReader {
 
   private final FilePath mAipFile;
-  Document mXmlDocument = null;
+  private Document mXmlDocument = null;
 
   /**
    * Class constructor.
    *
    * @param aAipFile Path to Advanced Installer project file (.AIP)
    */
-  public AdvinstAipReader(FilePath aAipFile)
-  {
+  AdvinstAipReader(final FilePath aAipFile) {
     this.mAipFile = aAipFile;
   }
 
@@ -52,8 +50,7 @@ class AdvinstAipReader
    * @return strings list containing the build names
    * @throws caphyon.jenkins.advinst.AdvinstException
    */
-  public List<String> getBuilds() throws AdvinstException
-  {
+  public List<String> getBuilds() throws AdvinstException {
     List<String> aipBuilds = new ArrayList<String>();
 
     loadXmlFile();
@@ -61,20 +58,15 @@ class AdvinstAipReader
     final String buildsXPAth = "/DOCUMENT/COMPONENT[@cid='caphyon.advinst.msicomp.BuildComponent']/ROW";
     XPath xPath = XPathFactory.newInstance().newXPath();
     NodeList buildRows;
-    try
-    {
+    try {
       buildRows = (NodeList) xPath.evaluate(buildsXPAth, mXmlDocument, XPathConstants.NODESET);
-    }
-    catch (XPathExpressionException ex)
-    {
+    } catch (XPathExpressionException ex) {
       throw new AdvinstException("Failed read AIP builds. Exception: " + ex.getMessage(), ex);
     }
-    for (int i = 0; i < buildRows.getLength(); i++)
-    {
+    for (int i = 0; i < buildRows.getLength(); i++) {
       Node buildRow = buildRows.item(i);
       Attr nameAttr = (Attr) buildRow.getAttributes().getNamedItem("BuildName");
-      if (null != nameAttr)
-      {
+      if (null != nameAttr) {
         aipBuilds.add(nameAttr.getValue());
       }
     }
@@ -82,17 +74,14 @@ class AdvinstAipReader
     return aipBuilds;
   }
 
-  public boolean isValidAip() throws AdvinstException
-  {
+  public boolean isValidAip() throws AdvinstException {
     loadXmlFile();
     NodeList children = mXmlDocument.getChildNodes();
-    if (children.getLength() != 1)
-    {
+    if (children.getLength() != 1) {
       return false;
     }
 
-    if (!"DOCUMENT".equals(children.item(1).getNodeName()))
-    {
+    if (!"DOCUMENT".equals(children.item(1).getNodeName())) {
       return false;
     }
 
@@ -101,38 +90,28 @@ class AdvinstAipReader
 
   }
 
-  private void loadXmlFile() throws AdvinstException
-  {
-    try
-    {
-      if (null != mXmlDocument)
-      {
+  private void loadXmlFile() throws AdvinstException {
+    try {
+      if (null != mXmlDocument) {
         return;
       }
 
       DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
       String aipContent = mAipFile.readToString();
-      // Update the XML version from 1.0 to 1.1. The AIP might contain special characters like &#1; 
+      // Update the XML version from 1.0 to 1.1. The AIP might contain special
+      // characters like &#1;
       // which are invalid for XML 1.0.
-      aipContent = aipContent.replace("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>", 
-              "<?xml version=\"1.1\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+      aipContent = aipContent.replace("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>",
+          "<?xml version=\"1.1\" encoding=\"UTF-8\" standalone=\"yes\"?>");
       mXmlDocument = documentBuilder.parse(new InputSource(new StringReader(aipContent)));
-    }
-    catch (SAXException ex)
-    {
+    } catch (SAXException ex) {
       throw new AdvinstException("Failed to load AIP file. Exception: " + ex.getMessage(), ex);
-    }
-    catch (ParserConfigurationException ex)
-    {
+    } catch (ParserConfigurationException ex) {
       throw new AdvinstException("Failed to load AIP file. Exception: " + ex.getMessage(), ex);
-    }
-    catch (IOException ex)
-    {
+    } catch (IOException ex) {
       throw new AdvinstException("Failed to load AIP file. Exception: " + ex.getMessage(), ex);
-    }
-    catch (InterruptedException ex)
-    {
+    } catch (InterruptedException ex) {
       throw new AdvinstException("Failed to load AIP file. Exception: " + ex.getMessage(), ex);
     }
   }

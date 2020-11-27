@@ -18,7 +18,6 @@ import hudson.model.Node;
 import hudson.model.Result;
 import hudson.tasks.Builder;
 
-
 /**
  * Sample {@link Builder}.
  * <p/>
@@ -28,7 +27,7 @@ import hudson.tasks.Builder;
  *
  * @author Ciprian Burca
  */
-public class AdvinstBuilder extends Builder {
+public final class AdvinstBuilder extends Builder {
 
   private final AdvinstParameters mAdvinstParameters;
   private String mInstallName;
@@ -47,9 +46,9 @@ public class AdvinstBuilder extends Builder {
    * @param aipProjectNoDigitalSignature tells to skip the digital signature step
    */
   @DataBoundConstructor
-  public AdvinstBuilder(String installName, String advinstRunType, String aipProjectPath, String aipProjectBuild,
-      String aipProjectOutputFolder, String aipProjectOutputName, String advinstExtraCommands,
-      boolean aipProjectNoDigitalSignature) {
+  public AdvinstBuilder(final String installName, final String advinstRunType, final String aipProjectPath,
+      final String aipProjectBuild, final String aipProjectOutputFolder, final String aipProjectOutputName,
+      final String advinstExtraCommands, final boolean aipProjectNoDigitalSignature) {
     this.mInstallName = installName;
     this.mAdvinstParameters = new AdvinstParameters();
     this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipPath, aipProjectPath);
@@ -67,18 +66,20 @@ public class AdvinstBuilder extends Builder {
    * @param build
    * @param launcher
    * @param listener
-   * @return success
+   * @return success 
    */
   @Override
-  public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) {
+  public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher,
+    final BuildListener listener) {
     boolean success;
     try {
       EnvVars env = build.getEnvironment(listener);
       final String advinstComPath = getAdvinstComPath(launcher, listener, env);
 
-      if (getAdvinstRunType().equals(AdvinstConsts.AdvinstRunTypeDeploy))
+      if (getAdvinstRunType().equals(AdvinstConsts.AdvinstRunTypeDeploy)) {
         return true;
-    
+      }
+
       final FilePath advinstAipPath = getAdvinstAipPath(build, launcher, env);
 
       AdvinstParametersProcessor paramsProcessor = new AdvinstParametersProcessor(mAdvinstParameters, advinstAipPath,
@@ -105,7 +106,7 @@ public class AdvinstBuilder extends Builder {
   }
 
   @Override
-  public final AdvinstDescriptorImpl getDescriptor() {
+  public AdvinstDescriptorImpl getDescriptor() {
     return (AdvinstDescriptorImpl) super.getDescriptor();
   }
 
@@ -114,7 +115,7 @@ public class AdvinstBuilder extends Builder {
   }
 
   @DataBoundSetter
-  public void getInstallName(String installName) {
+  public void getInstallName(final String installName) {
     this.mInstallName = installName;
   }
 
@@ -165,7 +166,7 @@ public class AdvinstBuilder extends Builder {
     return this.mAdvinstParameters.get(AdvinstConsts.AdvinstParamAipNoDigSig, false);
   }
 
-  private String getAdvinstComPath(Launcher launcher, BuildListener listener, final EnvVars env)
+  private String getAdvinstComPath(final Launcher launcher, final BuildListener listener, final EnvVars env)
       throws AdvinstException {
 
     AdvinstInstallation advinstInstall = getAdvinstInstallation();
