@@ -66,7 +66,7 @@ public final class AdvinstBuilder extends Builder {
    * @param build
    * @param launcher
    * @param listener
-   * @return success 
+   * @return success
    */
   @Override
   public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher,
