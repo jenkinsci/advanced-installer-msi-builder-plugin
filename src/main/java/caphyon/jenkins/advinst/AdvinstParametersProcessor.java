@@ -12,7 +12,7 @@ import java.util.StringTokenizer;
 /**
  * Translates the parameters provided by the user into something that Advanced
  * Installer can work with. It also validates the UI data
- * <p/>
+ * 
  * It returns a list of commands to be executed.
  */
 public class AdvinstParametersProcessor {

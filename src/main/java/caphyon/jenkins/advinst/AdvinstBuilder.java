@@ -20,7 +20,7 @@ import hudson.tasks.Builder;
 
 /**
  * Sample {@link Builder}.
- * <p/>
+ * 
  * When a build is performed, the
  * {@link AdvinstBuilder#perform(AbstractBuild, Launcher, BuildListener)} method
  * will be invoked.
@@ -36,13 +36,13 @@ public final class AdvinstBuilder extends Builder {
    * Class DataBoundConstructor. Fields in config.jelly must match the parameter
    * names in the "DataBoundConstructor"
    *
-   * @param installName                  name of the selected advinst installation
-   *                                     name
-   * @param aipProjectPath               path to the Advanced Installer project to
-   *                                     be buil
+   * @param installName                  name of the selected advinst installation name
+   * @param advinstRunType               execution mode for the plugin: deploy, build
+   * @param aipProjectPath               path to the Advanced Installer project to be built
    * @param aipProjectBuild              build name to be executed
    * @param aipProjectOutputFolder       output folder for the result package
    * @param aipProjectOutputName         name of the result package
+   * @param advinstExtraCommands         list of aic commands to be executead against the aip
    * @param aipProjectNoDigitalSignature tells to skip the digital signature step
    */
   @DataBoundConstructor
@@ -60,14 +60,6 @@ public final class AdvinstBuilder extends Builder {
     this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamExtraCommands, advinstExtraCommands);
   }
 
-  /**
-   * Performs the build.
-   *
-   * @param build
-   * @param launcher
-   * @param listener
-   * @return success
-   */
   @Override
   public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher,
     final BuildListener listener) {
