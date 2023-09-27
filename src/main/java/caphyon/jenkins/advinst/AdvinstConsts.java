@@ -43,4 +43,6 @@ final class AdvinstConsts {
   public static final String AdvinstParamExtraCommands = "advinstExtraCommands";
   public static final String AdvinstRunTypeDeploy = "deploy";
   public static final String AdvinstRunTypeBuild = "build";
+
+  public static final int ValidReleaseIntervalMonths = 24;
 }
