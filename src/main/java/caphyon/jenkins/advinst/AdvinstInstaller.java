@@ -70,6 +70,12 @@ public final class AdvinstInstaller extends ToolInstaller {
   public FilePath performInstallation(final ToolInstallation tool, final Node node, final TaskListener listener)
       throws IOException, InterruptedException {
 
+    AdvinstVersions versions = new AdvinstVersions();
+    if (versions.isDeprecated(mAdvinstVersion)) {
+      listener.getLogger().println(
+          Messages.WARNING_ADVINST_DEPRECATED_VERSION(versions.getMinimumAllowedVersion(), mAdvinstVersion));
+    }
+
     // Gather properties for the node to install on
     VirtualChannel channel = node.getChannel();
     if (null == channel) {

@@ -2,11 +2,18 @@
 
 Changelog of Advanced Installer plugin for Jenkins.
 
+## Advanced Installer Msi Builder Plugin  2.1.1
+
+Improvements:
+
+* Add better integration with newer Advanced Installer versions.
+* Add deprecation warning, if using an Advanced Installer version older than two years.
+
 ## Advanced Installer Msi Builder Plugin  2.1
 
 Features:
 
-* Added **Enable PowerShell support** option. 
+* Added **Enable PowerShell support** option.
 * The plugin now supports two execution senarios:
   * Deploy Advanced Installer tool
   * Deploy Advanced Installer tool and build project
