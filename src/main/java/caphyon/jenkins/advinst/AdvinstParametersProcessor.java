@@ -12,7 +12,7 @@ import java.util.StringTokenizer;
 /**
  * Translates the parameters provided by the user into something that Advanced
  * Installer can work with. It also validates the UI data
- * 
+ *
  * It returns a list of commands to be executed.
  */
 public class AdvinstParametersProcessor {
@@ -20,15 +20,12 @@ public class AdvinstParametersProcessor {
   private final AdvinstParameters mUiParameters;
   private final FilePath mBuildWorkspace;
   private final FilePath mAipPath;
-  private final AbstractBuild<?, ?> mBuild;
 
-  public AdvinstParametersProcessor(final AdvinstParameters uiParams, final FilePath aipPath,
-      final AbstractBuild<?, ?> build, final EnvVars envVars) {
+  public AdvinstParametersProcessor(final AdvinstParameters uiParams, final FilePath aipPath, final FilePath workspace, final EnvVars envVars) {
     mEnvVars = envVars;
     mUiParameters = uiParams;
-    mBuildWorkspace = build.getWorkspace();
+    mBuildWorkspace = workspace;
     mAipPath = aipPath;
-    mBuild = build;
   }
 
   public final List<String> getCommands() throws AdvinstException {
@@ -96,7 +93,6 @@ public class AdvinstParametersProcessor {
 
   private String getExpandedStringValue(final String uiParamName) {
     String expandedValue = Util.replaceMacro(mUiParameters.get(uiParamName, ""), mEnvVars);
-    expandedValue = Util.replaceMacro(expandedValue, mBuild.getBuildVariables());
     return expandedValue;
   }
 
