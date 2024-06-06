@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -32,6 +33,7 @@ import net.sf.json.JSONObject;
  */
 @Extension // This indicates to Jenkins that this is an implementation of an extension
            // point.
+@Symbol("advinstBuilder")
 public final class AdvinstDescriptorImpl extends BuildStepDescriptor<Builder> {
 
   @CopyOnWrite

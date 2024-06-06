@@ -80,7 +80,7 @@ public final class AdvinstBuilder extends Builder implements SimpleBuildStep {
           for (ParameterValue value : parameters.getParameters()) {
               if (value instanceof StringParameterValue) {
                   StringParameterValue stringValue = (StringParameterValue) value;
-                  env.put(stringValue.getName(), stringValue.value);
+                  env.put(stringValue.getName(), (String)stringValue.getValue());
               }
           }
       }
@@ -97,7 +97,7 @@ public final class AdvinstBuilder extends Builder implements SimpleBuildStep {
       final List<String> commands = paramsProcessor.getCommands();
 
       AdvinstTool advinstTool = new AdvinstTool(advinstComPath);
-      success = advinstTool.executeCommands(commands, advinstAipPath, build, launcher, listener, env);
+      success = advinstTool.executeCommands(commands, advinstAipPath, wotkspace, launcher, listener, env);
       run.setResult(success ? Result.SUCCESS : Result.FAILURE);
     } catch (IOException e) {
       listener.fatalError(e.getMessage());
@@ -121,7 +121,7 @@ public final class AdvinstBuilder extends Builder implements SimpleBuildStep {
   }
 
   @DataBoundSetter
-  public void getInstallName(final String installName) {
+  public void setInstallName(final String installName) {
     this.mInstallName = installName;
   }
 

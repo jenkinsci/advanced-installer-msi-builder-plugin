@@ -29,8 +29,7 @@ import java.util.List;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
+import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
 
 public final class AdvinstTool {
@@ -40,15 +39,15 @@ public final class AdvinstTool {
     this.mAdvinstComPath = advinstComPath;
   }
 
-  public boolean executeCommands(final List<String> commands, final FilePath aipPath, final AbstractBuild<?, ?> build,
-      final Launcher launcher, final BuildListener listener, final EnvVars env) throws AdvinstException {
+  public boolean executeCommands(final List<String> commands, final FilePath aipPath, final FilePath workspace,
+      final Launcher launcher, final TaskListener listener, final EnvVars env) throws AdvinstException {
     FilePath aicFilePath = null;
     try {
       if (launcher.isUnix()) {
         throw new AdvinstException(Messages.ERR_ADVINST_UNSUPPORTED_OS());
       }
 
-      FilePath pwd = build.getWorkspace();
+      FilePath pwd = workspace;
       if (null == pwd) {
         return false;
       }
