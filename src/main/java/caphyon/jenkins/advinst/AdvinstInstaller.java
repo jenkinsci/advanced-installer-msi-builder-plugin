@@ -72,8 +72,8 @@ public final class AdvinstInstaller extends ToolInstaller {
 
     AdvinstVersions versions = new AdvinstVersions();
     if (versions.isDeprecated(mAdvinstVersion)) {
-      listener.getLogger().println(
-          Messages.WARNING_ADVINST_DEPRECATED_VERSION(versions.getMinimumAllowedVersion(), mAdvinstVersion));
+      throw new InstallationFailedException(
+          Messages.ERROR_ADVINST_DEPRECATED_VERSION(versions.getMinimumAllowedVersion(), mAdvinstVersion));
     }
 
     // Gather properties for the node to install on
