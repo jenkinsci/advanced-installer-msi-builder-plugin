@@ -14,20 +14,28 @@ import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Computer;
+import hudson.model.Executor;
 import hudson.model.Node;
+import hudson.model.ParameterValue;
+import hudson.model.ParametersAction;
 import hudson.model.Result;
 import hudson.tasks.Builder;
 
+import hudson.model.Run;
+import hudson.model.StringParameterValue;
+import hudson.model.TaskListener;
+import jenkins.tasks.SimpleBuildStep;
+
 /**
  * Sample {@link Builder}.
- * 
+ *
  * When a build is performed, the
  * {@link AdvinstBuilder#perform(AbstractBuild, Launcher, BuildListener)} method
  * will be invoked.
  *
  * @author Ciprian Burca
  */
-public final class AdvinstBuilder extends Builder {
+public final class AdvinstBuilder extends Builder implements SimpleBuildStep {
 
   private final AdvinstParameters mAdvinstParameters;
   private String mInstallName;
@@ -51,50 +59,54 @@ public final class AdvinstBuilder extends Builder {
       final String advinstExtraCommands, final boolean aipProjectNoDigitalSignature) {
     this.mInstallName = installName;
     this.mAdvinstParameters = new AdvinstParameters();
-    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipPath, aipProjectPath);
-    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAdvinstRunType, advinstRunType);
-    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipBuild, aipProjectBuild);
-    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipOutputFolder, aipProjectOutputFolder);
-    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipOutputName, aipProjectOutputName);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipPath, aipProjectPath == null ? "" : aipProjectPath);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAdvinstRunType, advinstRunType == null ? "build" : advinstRunType);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipBuild, aipProjectBuild == null ? "" : aipProjectBuild);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipOutputFolder, aipProjectOutputFolder == null ? "" : aipProjectOutputFolder);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipOutputName, aipProjectOutputName == null ? "" : aipProjectOutputName);
     this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipNoDigSig, aipProjectNoDigitalSignature);
-    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamExtraCommands, advinstExtraCommands);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamExtraCommands, advinstExtraCommands == null ? "" : advinstExtraCommands);
   }
 
+
   @Override
-  public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher,
-    final BuildListener listener) {
+  public void perform(Run<?, ?> run, FilePath wotkspace, EnvVars envVars, Launcher launcher, TaskListener listener)
+      throws InterruptedException, IOException {
     boolean success;
     try {
-      EnvVars env = build.getEnvironment(listener);
-      final String advinstComPath = getAdvinstComPath(launcher, listener, env);
+      EnvVars env = envVars;
 
-      if (getAdvinstRunType().equals(AdvinstConsts.AdvinstRunTypeDeploy)) {
-        return true;
+      // Get the build parameters
+      ParametersAction parameters = run.getAction(ParametersAction.class);
+      if (parameters != null) {
+          for (ParameterValue value : parameters.getParameters()) {
+              if (value instanceof StringParameterValue) {
+                  StringParameterValue stringValue = (StringParameterValue) value;
+                  env.put(stringValue.getName(), (String)stringValue.getValue());
+              }
+          }
       }
 
-      final FilePath advinstAipPath = getAdvinstAipPath(build, launcher, env);
+      final Node node = getNodeFromRun(run);
+      final String advinstComPath = getAdvinstComPath(node, launcher, listener, env);
+
+      if (getAdvinstRunType().equals(AdvinstConsts.AdvinstRunTypeDeploy)) {
+        return;
+      }
+
+      final FilePath advinstAipPath = getAdvinstAipPath(wotkspace, launcher, env);
 
       AdvinstParametersProcessor paramsProcessor = new AdvinstParametersProcessor(mAdvinstParameters, advinstAipPath,
-          build, env);
+          wotkspace, env);
       final List<String> commands = paramsProcessor.getCommands();
 
       AdvinstTool advinstTool = new AdvinstTool(advinstComPath);
-      success = advinstTool.executeCommands(commands, advinstAipPath, build, launcher, listener, env);
-      build.setResult(success ? Result.SUCCESS : Result.FAILURE);
-    } catch (IOException e) {
-      listener.fatalError(e.getMessage());
-      build.setResult(Result.FAILURE);
-      return false;
-    } catch (InterruptedException e) {
-      listener.fatalError(e.getMessage());
-      build.setResult(Result.FAILURE);
-      return false;
+      success = advinstTool.executeCommands(commands, advinstAipPath, wotkspace, launcher, listener, env);
+      run.setResult(success ? Result.SUCCESS : Result.FAILURE);
     } catch (AdvinstException e) {
       listener.fatalError(e.getMessage());
-      build.setResult(Result.FAILURE);
-      return false;
+      run.setResult(Result.FAILURE);
     }
-    return success;
   }
 
   @Override
@@ -107,7 +119,7 @@ public final class AdvinstBuilder extends Builder {
   }
 
   @DataBoundSetter
-  public void getInstallName(final String installName) {
+  public void setInstallName(final String installName) {
     this.mInstallName = installName;
   }
 
@@ -158,18 +170,12 @@ public final class AdvinstBuilder extends Builder {
     return this.mAdvinstParameters.get(AdvinstConsts.AdvinstParamAipNoDigSig, false);
   }
 
-  private String getAdvinstComPath(final Launcher launcher, final BuildListener listener, final EnvVars env)
+  private String getAdvinstComPath(final Node node, final Launcher launcher, final TaskListener listener, final EnvVars env)
       throws AdvinstException {
 
     AdvinstInstallation advinstInstall = getAdvinstInstallation();
     if (null == advinstInstall) {
       throw new AdvinstException(Messages.ERR_ADVINST_INSTALL_NOT_SET());
-    }
-
-    Computer computer = Computer.currentComputer();
-    Node node = computer != null ? computer.getNode() : null;
-    if (node == null) {
-      throw new AdvinstException(Messages.ERR_ADVINST_COM_NOT_FOUND());
     }
 
     String advinstComPath = null;
@@ -190,13 +196,12 @@ public final class AdvinstBuilder extends Builder {
   }
 
   @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
-  private FilePath getAdvinstAipPath(final AbstractBuild<?, ?> build, final Launcher launcher, final EnvVars env)
+  private FilePath getAdvinstAipPath(final FilePath workspace, final Launcher launcher, final EnvVars env)
       throws AdvinstException {
     final String advinstAipPathParam = getAipProjectPath();
     String expandedValue = Util.replaceMacro(advinstAipPathParam, env);
-    expandedValue = Util.replaceMacro(expandedValue, build.getBuildVariables());
     assert expandedValue != null;
-    FilePath advinstAipPath = new FilePath(build.getWorkspace(), expandedValue);
+    FilePath advinstAipPath = new FilePath(workspace, expandedValue);
     try {
       if (!advinstAipPath.exists()) {
         throw new AdvinstException(Messages.ERR_ADVINST_AIP_NOT_FOUND(advinstAipPath.getRemote()));
@@ -217,5 +222,14 @@ public final class AdvinstBuilder extends Builder {
       }
     }
     return null;
+  }
+
+  private Node getNodeFromRun(Run<?, ?> run) {
+    final Executor executor = run.getExecutor();
+    if (executor == null) {
+      return null;
+    }
+    final Computer computer = executor.getOwner();
+    return computer != null ? computer.getNode() : null;
   }
 }
