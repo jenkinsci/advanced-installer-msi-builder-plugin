@@ -14,6 +14,7 @@ import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Computer;
+import hudson.model.Executor;
 import hudson.model.Node;
 import hudson.model.ParameterValue;
 import hudson.model.ParametersAction;
@@ -58,22 +59,23 @@ public final class AdvinstBuilder extends Builder implements SimpleBuildStep {
       final String advinstExtraCommands, final boolean aipProjectNoDigitalSignature) {
     this.mInstallName = installName;
     this.mAdvinstParameters = new AdvinstParameters();
-    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipPath, aipProjectPath);
-    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAdvinstRunType, advinstRunType);
-    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipBuild, aipProjectBuild);
-    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipOutputFolder, aipProjectOutputFolder);
-    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipOutputName, aipProjectOutputName);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipPath, aipProjectPath == null ? "" : aipProjectPath);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAdvinstRunType, advinstRunType == null ? "build" : advinstRunType);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipBuild, aipProjectBuild == null ? "" : aipProjectBuild);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipOutputFolder, aipProjectOutputFolder == null ? "" : aipProjectOutputFolder);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipOutputName, aipProjectOutputName == null ? "" : aipProjectOutputName);
     this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamAipNoDigSig, aipProjectNoDigitalSignature);
-    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamExtraCommands, advinstExtraCommands);
+    this.mAdvinstParameters.set(AdvinstConsts.AdvinstParamExtraCommands, advinstExtraCommands == null ? "" : advinstExtraCommands);
   }
 
 
   @Override
-  public void perform(Run<?, ?> run, FilePath wotkspace, Launcher launcher, TaskListener listener)
+  public void perform(Run<?, ?> run, FilePath wotkspace, EnvVars envVars, Launcher launcher, TaskListener listener)
       throws InterruptedException, IOException {
     boolean success;
     try {
-      EnvVars env = run.getEnvironment(listener);
+      EnvVars env = envVars;
+
       // Get the build parameters
       ParametersAction parameters = run.getAction(ParametersAction.class);
       if (parameters != null) {
@@ -84,7 +86,9 @@ public final class AdvinstBuilder extends Builder implements SimpleBuildStep {
               }
           }
       }
-      final String advinstComPath = getAdvinstComPath(launcher, listener, env);
+
+      final Node node = getNodeFromRun(run);
+      final String advinstComPath = getAdvinstComPath(node, launcher, listener, env);
 
       if (getAdvinstRunType().equals(AdvinstConsts.AdvinstRunTypeDeploy)) {
         return;
@@ -99,12 +103,6 @@ public final class AdvinstBuilder extends Builder implements SimpleBuildStep {
       AdvinstTool advinstTool = new AdvinstTool(advinstComPath);
       success = advinstTool.executeCommands(commands, advinstAipPath, wotkspace, launcher, listener, env);
       run.setResult(success ? Result.SUCCESS : Result.FAILURE);
-    } catch (IOException e) {
-      listener.fatalError(e.getMessage());
-      run.setResult(Result.FAILURE);
-    } catch (InterruptedException e) {
-      listener.fatalError(e.getMessage());
-      run.setResult(Result.FAILURE);
     } catch (AdvinstException e) {
       listener.fatalError(e.getMessage());
       run.setResult(Result.FAILURE);
@@ -172,18 +170,12 @@ public final class AdvinstBuilder extends Builder implements SimpleBuildStep {
     return this.mAdvinstParameters.get(AdvinstConsts.AdvinstParamAipNoDigSig, false);
   }
 
-  private String getAdvinstComPath(final Launcher launcher, final TaskListener listener, final EnvVars env)
+  private String getAdvinstComPath(final Node node, final Launcher launcher, final TaskListener listener, final EnvVars env)
       throws AdvinstException {
 
     AdvinstInstallation advinstInstall = getAdvinstInstallation();
     if (null == advinstInstall) {
       throw new AdvinstException(Messages.ERR_ADVINST_INSTALL_NOT_SET());
-    }
-
-    Computer computer = Computer.currentComputer();
-    Node node = computer != null ? computer.getNode() : null;
-    if (node == null) {
-      throw new AdvinstException(Messages.ERR_ADVINST_COM_NOT_FOUND());
     }
 
     String advinstComPath = null;
@@ -232,5 +224,12 @@ public final class AdvinstBuilder extends Builder implements SimpleBuildStep {
     return null;
   }
 
-
+  private Node getNodeFromRun(Run<?, ?> run) {
+    final Executor executor = run.getExecutor();
+    if (executor == null) {
+      return null;
+    }
+    final Computer computer = executor.getOwner();
+    return computer != null ? computer.getNode() : null;
+  }
 }
