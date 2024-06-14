@@ -87,7 +87,7 @@ pipeline {
                     advinstBuilder(
                         installName: 'Advinst 21.8.1',
                         advinstRunType: 'build',
-                        aipProjectPath: 'my_awesome_project.aip>',
+                        aipProjectPath: 'my_awesome_project.aip',
                         aipProjectBuild: 'MyBuild',
                         aipProjectOutputFolder: 'output',
                         aipProjectOutputName: 'MySetup',
