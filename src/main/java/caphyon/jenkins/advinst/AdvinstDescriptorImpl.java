@@ -26,7 +26,7 @@ import net.sf.json.JSONObject;
  * marked as public so that it can be accessed from views.
  *
  * <p>
- * See <tt>src/main/resources/caphyon/jenkins/AdvinstBuilder/*.jelly</tt> for
+ * See <code>src/main/resources/caphyon/jenkins/AdvinstBuilder/*.jelly</code> for
  * the actual HTML fragment for the configuration screen.
  *
  * @author Ciprian Burca
