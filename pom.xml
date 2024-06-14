@@ -3,23 +3,17 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>3.57</version>
+    <version>4.82</version>
     <relativePath />
   </parent>
 
   <properties>
-    <jenkins.version>2.157</jenkins.version>
-    <jna.version>5.6.0</jna.version>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <java.level>8</java.level>
-    <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
-    <maven.javadoc.skip>true</maven.javadoc.skip>
+    <jenkins.version>2.361</jenkins.version>
   </properties>
 
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>advanced-installer-msi-builder</artifactId>
-  <version>2.1.2-SNAPSHOT</version>
+  <version>3.0.0</version>
   <name>Advanced Installer Msi Builder Plugin</name>
   <description>This plugin builds Advanced Installer projects.</description>
   <packaging>hpi</packaging>
@@ -32,32 +26,17 @@
   </licenses>
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <additionalparam>-Xdoclint:none</additionalparam>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.jenkins-ci.tools</groupId>
-        <artifactId>maven-hpi-plugin</artifactId>
-        <configuration>
-          <pluginFirstClassLoader>true</pluginFirstClassLoader>
-        </configuration>
-      </plugin>
-    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.jenkins-ci.tools</groupId>
+          <artifactId>maven-hpi-plugin</artifactId>
+          <version>3.55</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </reporting>
 
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
   <repositories>
@@ -86,12 +65,12 @@
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>${jna.version}</version>
+      <version>5.14.0</version>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna-platform</artifactId>
-      <version>${jna.version}</version>
+      <version>5.14.0</version>
     </dependency>
     <dependency>
       <groupId>org.ini4j</groupId>
