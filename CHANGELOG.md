@@ -2,6 +2,16 @@
 
 Changelog of Advanced Installer plugin for Jenkins.
 
+## Advanced Installer Msi Builder Plugin  3.0.0
+
+New:
+* Add [Pipeline](https://www.jenkins.io/doc/book/pipeline/) support.
+* Add [Azure Trusted Sign](https://www.advancedinstaller.com/trusted-signing-integration.html) support.
+
+Changes:
+* The plugin now requires Jenkins version 2.361 and newer.
+* Add deprecation error, if using an Advanced Installer version older than two years.
+
 ## Advanced Installer Msi Builder Plugin  2.1.1
 
 Improvements:

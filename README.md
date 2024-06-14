@@ -52,10 +52,54 @@ and set the desired options. For details about the different options,
 please refer to the [Advanced Installer user
 guide](http://www.advancedinstaller.com/user-guide/introduction.html).
 
- 
-
 ![Configure pipeline](images/build-config.png)
 
+# Use from Pipeline
+
+### Just deploy
+
+```
+pipeline {
+    agent { label 'windows' }
+    stages {
+        stage("build") {
+            steps {
+                script {
+                    advinstBuilder(
+                        installName: "Advinst 21.8.1",
+                        advinstRunType: "deploy",
+                    )
+                }
+            }
+        }
+    }
+}
+```
+### Deploy and build AIP project
+
+```
+pipeline {
+    agent { label 'windows' }
+    stages {
+        stage("build") {
+            steps {
+                script {
+                    advinstBuilder(
+                        installName: 'Advinst 21.8.1',
+                        advinstRunType: 'build',
+                        aipProjectPath: 'my_awesome_project.aip>',
+                        aipProjectBuild: 'MyBuild',
+                        aipProjectOutputFolder: 'output',
+                        aipProjectOutputName: 'MySetup',
+                        aipProjectNoDigitalSignature: false,
+                        advinstExtraCommands: 'SetVersion "1.1.1"'
+                    )
+                }
+            }
+        }
+    }
+}
+```
 # **Changelog**
 
 The latest changes are documented on **[GitHub
