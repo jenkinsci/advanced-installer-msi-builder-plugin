@@ -230,6 +230,6 @@ public final class AdvinstBuilder extends Builder implements SimpleBuildStep {
       return null;
     }
     final Computer computer = executor.getOwner();
-    return computer != null ? computer.getNode() : null;
+    return computer.getNode();
   }
 }
