@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.82</version>
+    <version>4.88</version>
     <relativePath />
   </parent>
 
   <properties>
-    <jenkins.version>2.361</jenkins.version>
+    <jenkins.version>2.462.3</jenkins.version>
   </properties>
 
   <groupId>org.jenkins-ci.plugins</groupId>
@@ -26,15 +26,6 @@
   </licenses>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.jenkins-ci.tools</groupId>
-          <artifactId>maven-hpi-plugin</artifactId>
-          <version>3.55</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 
 
