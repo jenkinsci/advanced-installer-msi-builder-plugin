@@ -3,7 +3,6 @@ package caphyon.jenkins.advinst;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Util;
-import hudson.model.AbstractBuild;
 
 import java.util.ArrayList;
 import java.util.List;
