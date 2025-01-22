@@ -70,7 +70,7 @@
   </dependencies>
 
   <scm>
-    <connection>scm:git:ssh://github.com/jenkinsci/advanced-installer-msi-builder-plugin.git</connection>
+    <connection>scm:git:https://github.com/jenkinsci/advanced-installer-msi-builder-plugin.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jenkinsci/advanced-installer-msi-builder-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/advanced-installer-msi-builder-plugin</url>
     <tag>advanced-installer-msi-builder-2.1.0</tag>
